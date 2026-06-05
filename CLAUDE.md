@@ -75,21 +75,25 @@ Legal rule #1 (never violate in any code, string, or output):
 - [x] PWA manifest + mobile-responsive design
 - [x] Build succeeds (Turbopack optimized)
 
-### Week 6 ✓ (just completed)
+### Week 6 ✓
 - [x] **Admin Backend** — 5 endpoints with real DB/Redis queries
-  - GET /admin/stats: KPIs (products, verdicts, misses, cache, emails)
-  - GET /admin/products: product list with trust scores
-  - GET /admin/misses: search miss editorial queue
-  - GET /admin/emails: email capture list
-  - GET /admin/cache: cache statistics
+  - GET /admin/stats, /products, /misses, /emails, /cache
 - [x] **Admin Frontend** — Single-page dashboard at /admin (Overview + Products tabs)
 - [x] **Essential Pages** — /methodology (legal), /submit (notify-me), /[category], root → /in redirect
 - [x] Repository methods: get_all() for products, verdicts, misses, emails
-- [x] 45 tests still passing, build clean
+- [x] 45 tests passing, build clean
 
-### Next (Weeks 7–8)
-- [ ] **Week 7: SEO + Polish** — JSON-LD, sitemap, robots.txt, error handling, monitoring (Sentry)
-- [ ] **Week 8: Launch** — Pre-seed 50 products, QA, soft launch, Product Hunt
+### Week 7 ✓ (just completed)
+- [x] **SEO** — JSON-LD Review schema on product pages, generateMetadata() with title/description/OG
+- [x] **Sitemap** — auto-generated /sitemap.xml (60+ URLs: locales, categories, seed products)
+- [x] **Robots.txt** — /robots.txt with crawl rules (disallow /admin, /api)
+- [x] **Fakespot Alternative** — /[locale]/fakespot-alternative landing page (GTM, no "fake review" language)
+- [x] **Error Pages** — /error.tsx (global boundary), /[locale]/[category]/[product]/not-found.tsx (404)
+- [x] **Refresh Scheduler** — backend/workers/refresh_scheduler.py (tiered logic: 48h/168h/720h by age)
+- [x] 49 tests passing (+4 scheduler tests), build clean
+
+### Next (Week 8)
+- [ ] **Launch** — Pre-seed 50 products, QA, soft launch, Product Hunt
 
 ---
 
