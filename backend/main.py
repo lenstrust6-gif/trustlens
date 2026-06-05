@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from backend.config import settings
 from backend.cache import init_redis, close_redis
-from backend.routes import health, search, products, submit, categories, admin
+from backend.routes import health, search, products, submit, categories, admin, ratings
 import logging
 
 logging.basicConfig(level=logging.INFO)
@@ -43,6 +43,7 @@ app.include_router(products.router)
 app.include_router(submit.router)
 app.include_router(categories.router)
 app.include_router(admin.router)
+app.include_router(ratings.router)
 
 
 @app.get("/")

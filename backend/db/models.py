@@ -76,3 +76,30 @@ class EmailCaptureModel(Base):
     locale = Column(String(5))
     notified = Column(Boolean, default=False)
     created_at = Column(DateTime, server_default=func.now())
+
+
+class EmailModel(Base):
+    __tablename__ = "emails"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    recipient = Column(String(255), nullable=False)
+    subject = Column(String(255), nullable=False)
+    body = Column(Text, nullable=False)
+    verdict_id = Column(UUID(as_uuid=True), ForeignKey("verdicts.id", ondelete="SET NULL"))
+    email_capture_id = Column(UUID(as_uuid=True), ForeignKey("email_captures.id", ondelete="SET NULL"))
+    status = Column(String(50), default="pending")  # pending, sent, failed, bounced
+    resend_id = Column(String(255))  # ID from Resend API
+    error_message = Column(Text)
+    sent_at = Column(DateTime)
+    created_at = Column(DateTime, server_default=func.now())
+
+
+class VerdictRatingModel(Base):
+    __tablename__ = "verdict_ratings"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    verdict_id = Column(UUID(as_uuid=True), ForeignKey("verdicts.id", ondelete="CASCADE"), nullable=False)
+    user_id = Column(String(255))  # Can be anonymous (None) or auth user ID
+    helpful = Column(Boolean, nullable=False)  # True = helpful, False = not helpful
+    ip_address = Column(String(45))  # IPv4 or IPv6 for rate limiting
+    created_at = Column(DateTime, server_default=func.now())
