@@ -1,8 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { use, useState } from 'react'
 
-export default function SubmitPage({ params }: { params: { locale: string } }) {
+export default function SubmitPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = use(params)
   const [productName, setProductName] = useState('')
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
@@ -22,7 +23,7 @@ export default function SubmitPage({ params }: { params: { locale: string } }) {
         body: JSON.stringify({
           product_name: productName,
           email,
-          locale: params.locale,
+          locale,
         }),
       })
 

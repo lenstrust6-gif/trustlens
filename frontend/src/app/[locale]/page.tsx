@@ -1,10 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { use, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { addRecentSearch } from '@/lib/localStorage'
 
-export default function HomePage({ params }: { params: { locale: string } }) {
+export default function HomePage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = use(params)
   const router = useRouter()
   const [search, setSearch] = useState('')
 
@@ -13,7 +14,7 @@ export default function HomePage({ params }: { params: { locale: string } }) {
     if (!search.trim()) return
 
     addRecentSearch(search)
-    router.push(`/${params.locale}/search?q=${encodeURIComponent(search)}`)
+    router.push(`/${locale}/search?q=${encodeURIComponent(search)}`)
   }
 
   return (
@@ -48,7 +49,7 @@ export default function HomePage({ params }: { params: { locale: string } }) {
                 onClick={() => {
                   setSearch(product)
                   addRecentSearch(product)
-                  router.push(`/${params.locale}/search?q=${encodeURIComponent(product)}`)
+                  router.push(`/${locale}/search?q=${encodeURIComponent(product)}`)
                 }}
                 className="p-4 border border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 text-left"
               >

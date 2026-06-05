@@ -1,25 +1,27 @@
 'use client'
 
+import { use } from 'react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
 export default function CategoryPage({
   params,
 }: {
-  params: {
+  params: Promise<{
     locale: string
     category: string
-  }
+  }>
 }) {
+  const { locale, category } = use(params)
   const router = useRouter()
   const [search, setSearch] = useState('')
 
-  const categoryName = params.category.replace(/-/g, ' ').toUpperCase()
+  const categoryName = category.replace(/-/g, ' ').toUpperCase()
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
     if (search.trim()) {
-      router.push(`/${params.locale}/search?q=${encodeURIComponent(search)}`)
+      router.push(`/${locale}/search?q=${encodeURIComponent(search)}`)
     }
   }
 

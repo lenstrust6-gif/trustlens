@@ -1,16 +1,17 @@
 'use client'
 
-import { useState } from 'react'
+import { use, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
-export default function FakespotAlternativePage({ params }: { params: { locale: string } }) {
+export default function FakespotAlternativePage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = use(params)
   const router = useRouter()
   const [search, setSearch] = useState('')
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
     if (search.trim()) {
-      router.push(`/${params.locale}/search?q=${encodeURIComponent(search)}`)
+      router.push(`/${locale}/search?q=${encodeURIComponent(search)}`)
     }
   }
 
