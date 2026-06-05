@@ -39,3 +39,11 @@ async def create(
     session.add(product)
     await session.flush()
     return Product.model_validate(product)
+
+
+async def get_all(session: AsyncSession) -> list[Product]:
+    """Get all products."""
+    stmt = select(ProductModel).order_by(ProductModel.created_at.desc())
+    result = await session.execute(stmt)
+    products = result.scalars().all()
+    return [Product.model_validate(p) for p in products]

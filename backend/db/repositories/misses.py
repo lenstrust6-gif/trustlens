@@ -37,3 +37,19 @@ async def upsert(session: AsyncSession, query: str, locale: str) -> None:
         session.add(miss)
 
     await session.flush()
+
+
+async def get_all_sorted_by_count(session: AsyncSession) -> list[dict]:
+    """Get all search misses sorted by count (editorial queue)."""
+    stmt = select(SearchMissModel).order_by(SearchMissModel.count.desc())
+    result = await session.execute(stmt)
+    misses = result.scalars().all()
+    return [
+        {
+            "query": m.query,
+            "locale": m.locale,
+            "count": m.count,
+            "last_searched": m.last_searched.isoformat() if m.last_searched else None,
+        }
+        for m in misses
+    ]

@@ -1,3 +1,4 @@
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from backend.db.models import EmailCaptureModel
 import uuid
@@ -22,3 +23,20 @@ async def create(
     session.add(capture)
     await session.flush()
     return capture
+
+
+async def get_all(session: AsyncSession) -> list[dict]:
+    """Get all email captures."""
+    stmt = select(EmailCaptureModel).order_by(EmailCaptureModel.created_at.desc())
+    result = await session.execute(stmt)
+    captures = result.scalars().all()
+    return [
+        {
+            "email": c.email,
+            "product_name": c.product_name,
+            "locale": c.locale,
+            "notified": c.notified,
+            "created_at": c.created_at.isoformat() if c.created_at else None,
+        }
+        for c in captures
+    ]

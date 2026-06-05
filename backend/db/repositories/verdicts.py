@@ -1,6 +1,6 @@
-from sqlalchemy import select
+from sqlalchemy import select, join
 from sqlalchemy.ext.asyncio import AsyncSession
-from backend.db.models import VerdictModel
+from backend.db.models import VerdictModel, ProductModel
 from backend.models.verdict import Verdict
 from decimal import Decimal
 import uuid
@@ -56,3 +56,26 @@ async def create(
     session.add(verdict)
     await session.flush()
     return Verdict.model_validate(verdict)
+
+
+async def get_all_with_products(session: AsyncSession) -> list[dict]:
+    """Get all verdicts with product info."""
+    stmt = select(VerdictModel, ProductModel).select_from(
+        join(VerdictModel, ProductModel, VerdictModel.product_id == ProductModel.id)
+    ).order_by(VerdictModel.created_at.desc())
+    result = await session.execute(stmt)
+    rows = result.all()
+    verdicts = []
+    for verdict_orm, product_orm in rows:
+        verdict_dict = {
+            "product_name": product_orm.name,
+            "product_slug": product_orm.slug,
+            "category": product_orm.category,
+            "trust_score": float(verdict_orm.trust_score) if verdict_orm.trust_score else 0.0,
+            "confidence_tier": verdict_orm.confidence_tier,
+            "source_count_yt": verdict_orm.source_count_yt,
+            "source_count_amz": verdict_orm.source_count_amz,
+            "created_at": verdict_orm.created_at.isoformat() if verdict_orm.created_at else None,
+        }
+        verdicts.append(verdict_dict)
+    return verdicts
