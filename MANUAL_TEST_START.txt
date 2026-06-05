@@ -1,0 +1,264 @@
+═══════════════════════════════════════════════════════════════════════════════
+                  TRUSTLENS MANUAL TESTING — START HERE
+═══════════════════════════════════════════════════════════════════════════════
+
+You now have a production-ready TrustLens application ready for manual testing.
+This file tells you exactly how to get it running locally.
+
+═══════════════════════════════════════════════════════════════════════════════
+STEP 1: START SERVICES (in 3 separate terminals)
+═══════════════════════════════════════════════════════════════════════════════
+
+TERMINAL 1 — Docker & Database
+────────────────────────────────────────────────────────────────────────────
+
+cd /Users/tusway/TrustLens
+docker-compose up -d
+
+Wait for both services to be "healthy":
+docker-compose ps
+
+You should see:
+  trustlens-postgres-1   postgres:16-alpine     "docker-entrypoint..."   Up (healthy)
+  trustlens-redis-1      redis:7-alpine         "redis-server"           Up (healthy)
+
+
+TERMINAL 2 — Backend API Server
+────────────────────────────────────────────────────────────────────────────
+
+cd /Users/tusway/TrustLens/backend
+
+# Create virtual environment if you don't have it
+python3.11 -m venv venv
+
+# Activate
+source venv/bin/activate
+
+# Install dependencies
+pip install -e .
+
+# Run database migrations
+alembic upgrade head
+
+# Seed 50 sample products (important!)
+python -m backend.scripts.seed_products.py
+
+You should see:
+  ✓ boAt Airdopes 141 (tws-earbuds)
+  ✓ Noise ColorFitPro4 (smartwatches)
+  ... (50 total)
+  ✅ Seeded 50/50 products
+
+# Start development server
+uvicorn main:app --reload --host 0.0.0.0 --port 8000
+
+You should see:
+  Uvicorn running on http://0.0.0.0:8000
+  Press CTRL+C to quit
+
+
+TERMINAL 3 — Frontend Dev Server
+────────────────────────────────────────────────────────────────────────────
+
+cd /Users/tusway/TrustLens/frontend
+npm run dev
+
+You should see:
+  ▲ Next.js 16.2.7
+  - Local: http://localhost:3000
+
+
+═══════════════════════════════════════════════════════════════════════════════
+STEP 2: OPEN IN BROWSER (now that all 3 are running)
+═══════════════════════════════════════════════════════════════════════════════
+
+Frontend (Main app):
+  http://localhost:3000/in
+
+API Health Check:
+  http://localhost:8000/api/v1/health
+
+Admin Dashboard:
+  http://localhost:3000/admin
+
+═══════════════════════════════════════════════════════════════════════════════
+STEP 3: RUN TEST FLOWS (from TESTING.md)
+═══════════════════════════════════════════════════════════════════════════════
+
+See TESTING.md for 7 complete test flows:
+
+  Flow 1: Homepage & Quick Picks (2 min)
+    - Click search bar
+    - Type "boAt Airdopes 141"
+    - Verify VerdictCard loads with all 9 sections
+
+  Flow 2: Admin Dashboard (2 min)
+    - Go to /admin
+    - Check Overview tab: 50 products, 50 verdicts
+    - Check Products tab: product table with scores
+
+  Flow 3: Error Handling (1 min)
+    - Search for "xyz-nonexistent"
+    - Verify 404 page loads
+    - Check /in/methodology and /in/fakespot-alternative
+
+  Flow 4: API Endpoints (2 min)
+    - curl http://localhost:8000/api/v1/health
+    - curl -X POST search endpoint (see TESTING.md)
+    - curl /admin/stats
+
+  Flow 5: Code Quality (1 min)
+    - python -m pytest tests/ -v  (should show 49 passed)
+    - grep -r "fake review" (should find nothing)
+    - npm run build (should succeed)
+
+═══════════════════════════════════════════════════════════════════════════════
+WHAT YOU'RE TESTING
+═══════════════════════════════════════════════════════════════════════════════
+
+Frontend Features:
+  ✓ Homepage with search bar + quick picks (boAt, Noise, Mi)
+  ✓ Search returns a VerdictCard
+  ✓ VerdictCard has all 9 sections: score, summary, pros/cons, etc.
+  ✓ Trust Score displays 0-10 with confidence tier
+  ✓ No "fake review" language anywhere
+  ✓ Admin dashboard shows KPIs and products
+  ✓ 404 page for missing products
+  ✓ Error page for unexpected errors
+  ✓ Mobile responsive design
+
+Backend Functionality:
+  ✓ GET /api/v1/health — service status
+  ✓ POST /api/v1/search — returns VerdictCard
+  ✓ GET /api/v1/verdict/{locale}/{slug} — get verdict
+  ✓ POST /api/v1/submit — capture email
+  ✓ GET /admin/stats — KPIs (50 products, 50 verdicts)
+  ✓ GET /admin/products — product list
+  ✓ Database has 50 seed products
+  ✓ Redis cache working
+
+Code Quality:
+  ✓ 49/49 tests passing
+  ✓ No TypeScript errors
+  ✓ Zero "fake review" language
+  ✓ Clean build
+
+═══════════════════════════════════════════════════════════════════════════════
+SEED PRODUCTS (for testing searches)
+═══════════════════════════════════════════════════════════════════════════════
+
+Try searching for any of these:
+
+TWS Earbuds:
+  • boAt Airdopes 141
+  • Noise Buds Pro
+  • Realme Buds Air 3S
+  • OnePlus Buds Z2
+
+Smartwatches:
+  • Noise ColorFitPro4
+  • boAt Storm
+  • Fire-Boltt Venus
+  • Realme Watch 4
+
+Wireless Headphones:
+  • boAt Rockerz 400
+  • JBL Tune 710BT
+  • Sony WH-CH520
+
+Bluetooth Speakers:
+  • JBL Go 3
+  • boAt Stone 800
+  • Sony SRS-XB23
+
+Power Banks:
+  • Mi Power Bank 3i
+  • boAt Energyshroom PB500
+  • Realme 30000mAh
+
+═══════════════════════════════════════════════════════════════════════════════
+EXPECTED RESULTS
+═══════════════════════════════════════════════════════════════════════════════
+
+Homepage:
+  ✓ Logo, search bar, India flag
+  ✓ Quick Picks section with 3 products
+  ✓ Search is responsive
+
+Search Results:
+  ✓ Returns a VerdictCard
+  ✓ Shows Trust Score (0-10)
+  ✓ Shows confidence tier badge
+  ✓ Shows summary paragraph
+  ✓ Shows Best For / Avoid If
+  ✓ Shows Pros / Cons with mention counts
+  ✓ Shows Feature Scores (bars)
+  ✓ Shows Data Summary (sources)
+  ✓ No "fake review" anywhere
+
+Admin Dashboard:
+  ✓ Overview tab shows KPI cards
+  ✓ Total Products: 50
+  ✓ Verdicts Ready: 50
+  ✓ Products tab shows table
+  ✓ All 50 products visible
+
+API:
+  ✓ /api/v1/health returns 200 OK
+  ✓ /api/v1/search returns VerdictCard
+  ✓ /admin/stats returns KPI numbers
+  ✓ All endpoints respond <100ms
+
+═══════════════════════════════════════════════════════════════════════════════
+TROUBLESHOOTING
+═══════════════════════════════════════════════════════════════════════════════
+
+Port already in use?
+  lsof -i :3000    # Check frontend port
+  lsof -i :8000    # Check backend port
+  lsof -i :5432    # Check database port
+
+Docker not running?
+  Mac: Open Docker.app from Applications
+  Linux: sudo systemctl start docker
+
+No seed data?
+  cd backend
+  python -m backend.scripts.seed_products.py
+
+Need to reset database?
+  docker-compose down
+  docker-compose up -d
+  cd backend && alembic upgrade head
+
+Backend won't start?
+  Check if port 8000 is free (lsof -i :8000)
+  Check if database is running (docker-compose ps)
+
+═══════════════════════════════════════════════════════════════════════════════
+DOCUMENTATION
+═══════════════════════════════════════════════════════════════════════════════
+
+For full details, see these files in the project root:
+
+  • TESTING.md — Complete testing guide (7 flows, all curl commands, checklist)
+  • README.md — Project overview, architecture, features
+  • DEPLOYMENT.md — Deployment checklist and commands
+  • CLAUDE.md — Technical context (Week 1-8 build status, architecture)
+
+═══════════════════════════════════════════════════════════════════════════════
+NEXT STEPS AFTER TESTING
+═══════════════════════════════════════════════════════════════════════════════
+
+If all tests pass:
+  1. Run full test suite: python -m pytest backend/tests/ -v
+  2. Build frontend: npm run build
+  3. Create git commit summarizing any issues found
+  4. Deploy to Vercel (frontend) + Railway (backend)
+  5. Run seed_products.py on production database
+  6. Launch on Product Hunt
+
+═══════════════════════════════════════════════════════════════════════════════
+
+Ready to test! Good luck! 🚀
+
