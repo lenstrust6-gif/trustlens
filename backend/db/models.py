@@ -103,3 +103,51 @@ class VerdictRatingModel(Base):
     helpful = Column(Boolean, nullable=False)  # True = helpful, False = not helpful
     ip_address = Column(String(45))  # IPv4 or IPv6 for rate limiting
     created_at = Column(DateTime, server_default=func.now())
+
+
+class AffiliateLinksModel(Base):
+    __tablename__ = "affiliate_links"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    product_id = Column(UUID(as_uuid=True), ForeignKey("products.id", ondelete="CASCADE"), nullable=False)
+    amazon_url = Column(String(500), nullable=False)
+    tracking_code = Column(String(100))  # Amazon associate tag
+    click_count = Column(Integer, default=0)
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+
+
+class UserModel(Base):
+    __tablename__ = "users"
+
+    id = Column(String(255), primary_key=True)  # Google ID or UUID
+    email = Column(String(255), nullable=False, unique=True, index=True)
+    name = Column(String(255))
+    google_id = Column(String(255), unique=True, index=True)
+    avatar_url = Column(String(500))
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+
+
+class UserPreferencesModel(Base):
+    __tablename__ = "user_preferences"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id = Column(String(255), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, unique=True)
+    email_notifications = Column(Boolean, default=True)
+    default_locale = Column(String(5), default="in")
+    default_sort = Column(String(50), default="trust_score_desc")
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+
+
+class SavedSearchModel(Base):
+    __tablename__ = "saved_searches"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id = Column(String(255), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    query = Column(String(255), nullable=False)
+    filters = Column(JSON)  # Stores filter params as JSON
+    category = Column(String(100))
+    created_at = Column(DateTime, server_default=func.now())
+    last_searched = Column(DateTime, server_default=func.now())
