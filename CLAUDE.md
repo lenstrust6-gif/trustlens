@@ -58,18 +58,27 @@ Legal rule #1 (never violate in any code, string, or output):
 - [x] Claude Sonnet verdict writer (80–120 words) + Gemma fallback
 - [x] Tests: 35 passing
 
-### Week 4 ✓ (just completed)
-- [x] Orchestrator.run_pipeline() chains all 8 steps (fetch → filter → score → sentiment → themes → TrustScore → verdict → assemble)
-- [x] VerdictCard assembler: full 9-section card (summary, pros, cons, bestFor, avoidIf, specTags, featureScores, reviewHighlights, sourcePanel, alternatives)
-- [x] DB persistence: save product + verdict to Postgres
-- [x] Cache storage: set verdict in Redis (72hr TTL)
-- [x] Routes wired: /api/v1/search returns full VerdictCard, /api/v1/verdict/{locale}/{slug} serves cached verdicts
+### Week 4 ✓
+- [x] Orchestrator.run_pipeline() chains all 8 steps
+- [x] VerdictCard assembler: full 9-section card
+- [x] DB persistence + cache storage
+- [x] Routes wired: /api/v1/search and /api/v1/verdict
 - [x] Tests: 45 passing
 
-### Next (Weeks 5–8)
-- [ ] **Week 5: Frontend** — Next.js homepage, category page, VerdictCard component, search autocomplete
+### Week 5 ✓ (just completed)
+- [x] Next.js 14 App Router scaffold with TypeScript + Tailwind
+- [x] Locale routing (India live, US/UK coming soon)
+- [x] Homepage with hero search + quick picks (boAt, Noise, Mi products)
+- [x] VerdictCard rendering (9 sections: score, summary, pros/cons, best-for/avoid-if, specs, features, highlights, source)
+- [x] Search page with dynamic API integration
+- [x] Product page with SSR (server-side verdict fetch)
+- [x] PWA manifest + mobile-responsive design
+- [x] Build succeeds (Turbopack optimized)
+- [x] Dev server runs on :3000
+
+### Next (Weeks 6–8)
 - [ ] **Week 6: Admin dashboard** — Control center, pipeline monitor, product index, quotas, costs, cache stats
-- [ ] **Week 7: Polish** — SEO (JSON-LD, sitemap), Core Web Vitals, error handling, monitoring (Sentry, UptimeRobot)
+- [ ] **Week 7: Polish** — SEO (JSON-LD, sitemap), Core Web Vitals, error handling, Sentry + UptimeRobot
 - [ ] **Week 8: Launch** — Pre-seed 50 products, QA, soft launch, Product Hunt
 
 ---
