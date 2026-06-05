@@ -23,3 +23,13 @@ class AmazonDataProvider(ABC):
             ASIN string or None if not found
         """
         raise NotImplementedError
+
+    async def get_reviews_by_name(self, product_name: str, locale: str) -> list[dict]:
+        """
+        Convenience method: resolve ASIN from product name, then fetch reviews.
+        Returns empty list if ASIN not found or reviews fetch fails.
+        """
+        asin = await self.resolve_asin(product_name, locale)
+        if not asin:
+            return []
+        return await self.get_reviews(asin, locale)
