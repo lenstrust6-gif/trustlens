@@ -1,25 +1,29 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
+import { signIn } from 'next-auth/react'
 import { useState } from 'react'
 
 interface LoginButtonProps {
   variant?: 'primary' | 'secondary' | 'ghost'
   size?: 'sm' | 'md' | 'lg'
+  callbackUrl?: string
 }
 
 export default function LoginButton({
   variant = 'primary',
   size = 'md',
+  callbackUrl = '/',
 }: LoginButtonProps) {
-  const router = useRouter()
   const [loading, setLoading] = useState(false)
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     setLoading(true)
-    // Redirect to OAuth flow (NextAuth.js will handle this)
-    // This is a placeholder - actual implementation would use signIn() from next-auth/react
-    router.push('/api/auth/signin')
+    try {
+      await signIn('google', { callbackUrl })
+    } catch (error) {
+      console.error('Sign in error:', error)
+      setLoading(false)
+    }
   }
 
   const baseClasses = 'font-semibold rounded-lg transition disabled:opacity-50'
