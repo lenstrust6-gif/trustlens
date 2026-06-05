@@ -1,4 +1,5 @@
-import { Suspense } from 'react'
+import { Suspense, ReactNode } from 'react'
+import type { Metadata } from 'next'
 import VerdictCard from '@/components/VerdictCard'
 import { api } from '@/lib/api'
 import { notFound } from 'next/navigation'
@@ -6,9 +7,63 @@ import { notFound } from 'next/navigation'
 async function VerdictContent({ locale, slug }: { locale: string; slug: string }) {
   try {
     const verdict = await api.getVerdict(locale, slug)
-    return <VerdictCard card={verdict} />
+
+    return (
+      <>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'Review',
+              itemReviewed: {
+                '@type': 'Product',
+                name: verdict.product.name,
+              },
+              reviewRating: {
+                '@type': 'Rating',
+                ratingValue: verdict.trustScore,
+                bestRating: 10,
+              },
+              author: {
+                '@type': 'Organization',
+                name: 'TrustLens',
+              },
+              reviewBody: verdict.summary,
+            }),
+          }}
+        />
+        <VerdictCard card={verdict} />
+      </>
+    )
   } catch (error) {
     notFound()
+  }
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string; category: string; product: string }>
+}): Promise<Metadata> {
+  const { locale, product } = await params
+
+  try {
+    const verdict = await api.getVerdict(locale, product)
+    return {
+      title: `${verdict.product.name} - TrustLens Review | Authenticity Score ${verdict.trustScore.toFixed(1)}/10`,
+      description: verdict.summary.substring(0, 160),
+      openGraph: {
+        title: `${verdict.product.name} - TrustLens`,
+        description: verdict.summary.substring(0, 160),
+        type: 'article',
+      },
+    }
+  } catch {
+    return {
+      title: 'Product Review - TrustLens',
+      description: 'Read authentic product reviews on TrustLens',
+    }
   }
 }
 
