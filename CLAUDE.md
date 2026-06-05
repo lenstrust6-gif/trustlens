@@ -40,24 +40,31 @@ Legal rule #1 (never violate in any code, string, or output):
 
 ---
 
-## Build Status – Week 2 Complete ✓
+## Build Status – Week 3 Complete ✓
 
 ### Week 1 ✓
 - [x] Project scaffolding, FastAPI, database schema, Redis cache, provider abstraction
 - [x] Tests: 10 passing
 
-### Week 2 ✓ (just completed)
+### Week 2 ✓
 - [x] YouTubeFetcher: Google Cloud YouTube Data API v3 (search → comments, locale-aware)
 - [x] DB Repositories: products, verdicts, misses, emails (async SQLAlchemy)
 - [x] Pipeline Orchestrator: parallel fetch, fallback handling, provider selection
 - [x] Search route wired: cache → fetch → miss log → return data
-- [x] Tests: 25 passing (YouTube, pipeline, cache, repos)
+- [x] Tests: 25 passing
 
-### Next (Week 3 – AI Processing)
-- [ ] Groq Gemma 3 12B: noise filter, auth scorer, sentiment, theme extractor
-- [ ] Weighted TrustScore calculator
-- [ ] Claude Sonnet verdict writer (80–120 words)
-- [ ] Verdict card assembly + DB persistence + cache storage
+### Week 3 ✓ (just completed)
+- [x] Groq Gemma 3 12B: noise filter, auth scorer (6-signal), sentiment analysis, theme extractor
+- [x] TrustScore calculator: weighted formula (Amazon 45% + YouTube 35% + Auth 20%), time-weighting, tiers
+- [x] Claude Sonnet verdict writer (80–120 words) + Gemma fallback
+- [x] Tests: 35 passing (score calculations, thresholds, verdicts)
+
+### Next (Week 4 – Verdict Assembly)
+- [ ] Orchestrator.run_pipeline() chains all 8 steps (fetch → filter → score → sentiment → themes → TrustScore → verdict → assemble)
+- [ ] VerdictCard assembly (9-section card: summary, pros, cons, best-for, avoid-if, specs, scores, sources, alternatives)
+- [ ] DB persistence: save verdict to Postgres
+- [ ] Cache storage: set verdict in Redis (72hr TTL)
+- [ ] /api/v1/search returns full VerdictCard (not raw data)
 
 ---
 
