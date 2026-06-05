@@ -1,6 +1,6 @@
 'use client'
 
-import { Suspense } from 'react'
+import { Suspense, use } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { api } from '@/lib/api'
@@ -68,8 +68,8 @@ function SearchPageContent({ locale }: { locale: string }) {
   )
 }
 
-export default async function SearchPage({ params }: { params: Promise<{ locale: string }> }) {
-  const { locale } = await params
+export default function SearchPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = use(params)
   return (
     <Suspense fallback={<div className="text-center py-12">Loading...</div>}>
       <SearchPageContent locale={locale} />
