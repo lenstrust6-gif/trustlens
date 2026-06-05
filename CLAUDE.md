@@ -40,7 +40,7 @@ Legal rule #1 (never violate in any code, string, or output):
 
 ---
 
-## Build Status – Week 3 Complete ✓
+## Build Status – Week 4 Complete ✓
 
 ### Week 1 ✓
 - [x] Project scaffolding, FastAPI, database schema, Redis cache, provider abstraction
@@ -50,21 +50,27 @@ Legal rule #1 (never violate in any code, string, or output):
 - [x] YouTubeFetcher: Google Cloud YouTube Data API v3 (search → comments, locale-aware)
 - [x] DB Repositories: products, verdicts, misses, emails (async SQLAlchemy)
 - [x] Pipeline Orchestrator: parallel fetch, fallback handling, provider selection
-- [x] Search route wired: cache → fetch → miss log → return data
 - [x] Tests: 25 passing
 
-### Week 3 ✓ (just completed)
+### Week 3 ✓
 - [x] Groq Gemma 3 12B: noise filter, auth scorer (6-signal), sentiment analysis, theme extractor
 - [x] TrustScore calculator: weighted formula (Amazon 45% + YouTube 35% + Auth 20%), time-weighting, tiers
 - [x] Claude Sonnet verdict writer (80–120 words) + Gemma fallback
-- [x] Tests: 35 passing (score calculations, thresholds, verdicts)
+- [x] Tests: 35 passing
 
-### Next (Week 4 – Verdict Assembly)
-- [ ] Orchestrator.run_pipeline() chains all 8 steps (fetch → filter → score → sentiment → themes → TrustScore → verdict → assemble)
-- [ ] VerdictCard assembly (9-section card: summary, pros, cons, best-for, avoid-if, specs, scores, sources, alternatives)
-- [ ] DB persistence: save verdict to Postgres
-- [ ] Cache storage: set verdict in Redis (72hr TTL)
-- [ ] /api/v1/search returns full VerdictCard (not raw data)
+### Week 4 ✓ (just completed)
+- [x] Orchestrator.run_pipeline() chains all 8 steps (fetch → filter → score → sentiment → themes → TrustScore → verdict → assemble)
+- [x] VerdictCard assembler: full 9-section card (summary, pros, cons, bestFor, avoidIf, specTags, featureScores, reviewHighlights, sourcePanel, alternatives)
+- [x] DB persistence: save product + verdict to Postgres
+- [x] Cache storage: set verdict in Redis (72hr TTL)
+- [x] Routes wired: /api/v1/search returns full VerdictCard, /api/v1/verdict/{locale}/{slug} serves cached verdicts
+- [x] Tests: 45 passing
+
+### Next (Weeks 5–8)
+- [ ] **Week 5: Frontend** — Next.js homepage, category page, VerdictCard component, search autocomplete
+- [ ] **Week 6: Admin dashboard** — Control center, pipeline monitor, product index, quotas, costs, cache stats
+- [ ] **Week 7: Polish** — SEO (JSON-LD, sitemap), Core Web Vitals, error handling, monitoring (Sentry, UptimeRobot)
+- [ ] **Week 8: Launch** — Pre-seed 50 products, QA, soft launch, Product Hunt
 
 ---
 
