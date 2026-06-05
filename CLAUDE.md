@@ -40,27 +40,24 @@ Legal rule #1 (never violate in any code, string, or output):
 
 ---
 
-## Build Status – Week 1 Complete ✓
+## Build Status – Week 2 Complete ✓
 
-### Completed
-- [x] Project scaffolding (.gitignore, docker-compose, .env.example)
-- [x] FastAPI entry point with CORS, lifespan handlers, route registration
-- [x] Database schema (5 tables + Alembic migrations)
-- [x] Redis cache layer (get/set/check, TTL, hit rate)
-- [x] Provider abstraction (AmazonDataProvider + RainforestProvider + OxylabsProvider)
-- [x] Pydantic models (Product, Verdict, Review)
-- [x] All API routes stubbed (search, verdict, submit, categories, admin)
-- [x] Health endpoint (cache + DB + provider status)
-- [x] Configuration (pydantic-settings, .env loading)
-- [x] Tests: 10 passing (provider abstraction, routes, config)
+### Week 1 ✓
+- [x] Project scaffolding, FastAPI, database schema, Redis cache, provider abstraction
+- [x] Tests: 10 passing
 
-### Next (Week 2 – Data Pipeline)
-- [ ] YouTube Data API v3 connector (EN + Hindi comments)
-- [ ] Rainforest API connector (Amazon.in reviews)
-- [ ] Oxylabs fallback connector (pre-built, dormant)
-- [ ] Parallel async fetch workers (asyncio.gather)
-- [ ] Search miss logging (upsert on query)
-- [ ] End-to-end fetch test: 3 real products
+### Week 2 ✓ (just completed)
+- [x] YouTubeFetcher: Google Cloud YouTube Data API v3 (search → comments, locale-aware)
+- [x] DB Repositories: products, verdicts, misses, emails (async SQLAlchemy)
+- [x] Pipeline Orchestrator: parallel fetch, fallback handling, provider selection
+- [x] Search route wired: cache → fetch → miss log → return data
+- [x] Tests: 25 passing (YouTube, pipeline, cache, repos)
+
+### Next (Week 3 – AI Processing)
+- [ ] Groq Gemma 3 12B: noise filter, auth scorer, sentiment, theme extractor
+- [ ] Weighted TrustScore calculator
+- [ ] Claude Sonnet verdict writer (80–120 words)
+- [ ] Verdict card assembly + DB persistence + cache storage
 
 ---
 
