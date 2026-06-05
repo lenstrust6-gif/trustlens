@@ -65,7 +65,7 @@ Legal rule #1 (never violate in any code, string, or output):
 - [x] Routes wired: /api/v1/search and /api/v1/verdict
 - [x] Tests: 45 passing
 
-### Week 5 ✓ (just completed)
+### Week 5 ✓
 - [x] Next.js 14 App Router scaffold with TypeScript + Tailwind
 - [x] Locale routing (India live, US/UK coming soon)
 - [x] Homepage with hero search + quick picks (boAt, Noise, Mi products)
@@ -74,11 +74,21 @@ Legal rule #1 (never violate in any code, string, or output):
 - [x] Product page with SSR (server-side verdict fetch)
 - [x] PWA manifest + mobile-responsive design
 - [x] Build succeeds (Turbopack optimized)
-- [x] Dev server runs on :3000
 
-### Next (Weeks 6–8)
-- [ ] **Week 6: Admin dashboard** — Control center, pipeline monitor, product index, quotas, costs, cache stats
-- [ ] **Week 7: Polish** — SEO (JSON-LD, sitemap), Core Web Vitals, error handling, Sentry + UptimeRobot
+### Week 6 ✓ (just completed)
+- [x] **Admin Backend** — 5 endpoints with real DB/Redis queries
+  - GET /admin/stats: KPIs (products, verdicts, misses, cache, emails)
+  - GET /admin/products: product list with trust scores
+  - GET /admin/misses: search miss editorial queue
+  - GET /admin/emails: email capture list
+  - GET /admin/cache: cache statistics
+- [x] **Admin Frontend** — Single-page dashboard at /admin (Overview + Products tabs)
+- [x] **Essential Pages** — /methodology (legal), /submit (notify-me), /[category], root → /in redirect
+- [x] Repository methods: get_all() for products, verdicts, misses, emails
+- [x] 45 tests still passing, build clean
+
+### Next (Weeks 7–8)
+- [ ] **Week 7: SEO + Polish** — JSON-LD, sitemap, robots.txt, error handling, monitoring (Sentry)
 - [ ] **Week 8: Launch** — Pre-seed 50 products, QA, soft launch, Product Hunt
 
 ---
