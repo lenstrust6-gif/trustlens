@@ -13,6 +13,9 @@ eggs/
 lib/
 lib64/
 parts/
+
+# Exception: Include frontend source files
+!frontend/src/lib/
 sdist/
 var/
 wheels/
