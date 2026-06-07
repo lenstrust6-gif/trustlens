@@ -7,7 +7,7 @@ interface RangeSliderProps {
   max: number
   step: number
   value: number[]
-  onChange: (min: number, max?: number) => void
+  onChange: (min: number, max: number) => void
   labels?: [string, string]
 }
 
