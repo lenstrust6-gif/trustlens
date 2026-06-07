@@ -1,6 +1,32 @@
-import NextAuth from 'next-auth'
+import NextAuth, { type NextAuthOptions } from 'next-auth'
 import GoogleProvider from 'next-auth/providers/google'
-import { NextAuthOptions } from 'next-auth'
+
+declare module 'next-auth' {
+  interface Session {
+    user: {
+      id?: string
+      provider?: string
+      email?: string | null
+      name?: string | null
+      image?: string | null
+    }
+  }
+  interface User {
+    id?: string
+    email?: string
+    name?: string
+    image?: string
+  }
+}
+
+declare module 'next-auth/jwt' {
+  interface JWT {
+    id?: string
+    provider?: string
+    providerAccountId?: string
+    image?: string
+  }
+}
 
 const authOptions: NextAuthOptions = {
   providers: [
@@ -12,7 +38,7 @@ const authOptions: NextAuthOptions = {
   ],
   session: {
     strategy: 'jwt',
-    maxAge: 30 * 24 * 60 * 60, // 30 days
+    maxAge: 30 * 24 * 60 * 60,
   },
   jwt: {
     secret: process.env.NEXTAUTH_SECRET,
@@ -28,50 +54,62 @@ const authOptions: NextAuthOptions = {
         token.id = user.id
         token.email = user.email
         token.name = user.name
+        token.image = user.image
       }
       if (account) {
-        token.provider = account.provider
-        token.providerAccountId = account.providerAccountId
+        token.provider = (account as any).provider
+        token.providerAccountId = ((account as any).providerAccountId || (account as any).id) as string
       }
       return token
     },
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string
-        session.user.provider = token.provider as string
+        session.user.email = token.email as string | null
+        session.user.name = token.name as string | null
+        session.user.image = token.image as string | null
       }
       return session
     },
-    async signIn({ user, account, profile }) {
-      // Optional: Call backend to create/update user
-      try {
-        if (user.email) {
+    async signIn({ user, account }) {
+      // Sync user to backend database
+      if (account && user.email) {
+        try {
           const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/${user.id}`,
+            `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/v1/auth/sync`,
             {
-              method: 'GET',
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                email: user.email,
+                name: user.name || null,
+                image: user.image || null,
+                provider: account.provider,
+                provider_account_id: account.providerAccountId || account.id,
+              }),
             }
           )
 
-          // User doesn't exist in backend, create them
-          if (response.status === 404) {
-            // Backend would create user on first login
-            console.log('New user, backend will create on first API call')
+          if (!response.ok) {
+            console.error('Failed to sync user to backend')
+            return false
           }
-        }
-      } catch (error) {
-        console.error('Error in signIn callback:', error)
-        // Don't block sign in if backend call fails
-      }
 
+          const userData = await response.json()
+          user.id = userData.id
+        } catch (error) {
+          console.error('Error syncing user:', error)
+          return false
+        }
+      }
       return true
     },
   },
   events: {
-    async signIn({ user, account, profile, isNewUser }) {
-      console.log(`User ${user.email} signed in via ${account?.provider}`)
+    async signIn({ user }) {
+      console.log(`User ${user.email} signed in`)
     },
-    async signOut({ token }) {
+    async signOut() {
       console.log(`User signed out`)
     },
   },

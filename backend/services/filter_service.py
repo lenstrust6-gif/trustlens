@@ -1,217 +1,157 @@
-"""Service for filtering and sorting products."""
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.future import select
-from sqlalchemy import and_, or_, desc, asc, func
-from backend.db.models import ProductModel, VerdictModel
-from decimal import Decimal
-from typing import Optional
+"""Filter service for product search and filtering."""
+from typing import TypedDict
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+# Mock product database
+MOCK_PRODUCTS = [
+    {
+        "id": "boat-airdopes-141",
+        "name": "boAt Airdopes 141",
+        "category": "tws-earbuds",
+        "locale": "in",
+        "trust_score": 8.3,
+        "confidence_tier": "established",
+        "auth_score_avg": 74.5,
+        "youtube_count": 42,
+        "amazon_count": 38,
+        "source": "both",
+    },
+    {
+        "id": "noise-colorfitpro4",
+        "name": "Noise ColorFit Pro 4",
+        "category": "smartwatches",
+        "locale": "in",
+        "trust_score": 7.9,
+        "confidence_tier": "established",
+        "auth_score_avg": 76.2,
+        "youtube_count": 35,
+        "amazon_count": 42,
+        "source": "both",
+    },
+    {
+        "id": "mi-power-bank-3i",
+        "name": "Mi Power Bank 3i",
+        "category": "power-banks",
+        "locale": "in",
+        "trust_score": 8.1,
+        "confidence_tier": "established",
+        "auth_score_avg": 75.8,
+        "youtube_count": 48,
+        "amazon_count": 45,
+        "source": "both",
+    },
+]
 
 
 class FilterService:
-    """Service for advanced product filtering and sorting."""
+    """Service for filtering and sorting products."""
 
     @staticmethod
-    async def filter_products(
-        session: AsyncSession,
-        locale: str,
-        category: Optional[str] = None,
-        trust_score_min: Optional[float] = None,
-        trust_score_max: Optional[float] = None,
-        brands: Optional[list[str]] = None,
-        sort_by: str = "trust_score_desc",  # trust_score_asc, trust_score_desc, name_asc, name_desc, newest
-        limit: int = 50,
-        offset: int = 0,
-    ) -> dict:
-        """Filter and sort products with pagination."""
-        # Build base query
-        stmt = (
-            select(ProductModel, VerdictModel)
-            .outerjoin(VerdictModel, ProductModel.id == VerdictModel.product_id)
-            .where(ProductModel.locale == locale)
-        )
-
-        # Apply filters
-        filters = []
-
+    def get_filter_stats(locale: str = "in", category: str | None = None) -> dict:
+        """Get available filter options from mock data."""
+        products = MOCK_PRODUCTS
         if category:
-            filters.append(ProductModel.category == category)
+            products = [p for p in products if p["category"] == category]
 
-        if trust_score_min is not None:
-            filters.append(VerdictModel.trust_score >= Decimal(str(trust_score_min)))
+        if not products:
+            return {
+                "trust_score_range": [0.0, 10.0],
+                "auth_score_range": [0, 100],
+                "sources": [],
+                "confidence_tiers": [],
+                "categories": [],
+                "total_products": 0,
+            }
 
-        if trust_score_max is not None:
-            filters.append(VerdictModel.trust_score <= Decimal(str(trust_score_max)))
+        # Calculate ranges
+        trust_scores = [p["trust_score"] for p in products]
+        auth_scores = [p["auth_score_avg"] for p in products]
 
-        if brands:
-            filters.append(ProductModel.brand.in_(brands))
+        trust_min = min(trust_scores) if trust_scores else 0.0
+        trust_max = max(trust_scores) if trust_scores else 10.0
+        auth_min = min(auth_scores) if auth_scores else 0
+        auth_max = max(auth_scores) if auth_scores else 100
 
-        if filters:
-            stmt = stmt.where(and_(*filters))
+        # Count by tier
+        tier_counts = {}
+        for p in products:
+            tier = p["confidence_tier"]
+            tier_counts[tier] = tier_counts.get(tier, 0) + 1
 
-        # Apply sorting
-        if sort_by == "trust_score_asc":
-            stmt = stmt.order_by(asc(VerdictModel.trust_score.nullsfirst()))
-        elif sort_by == "name_asc":
-            stmt = stmt.order_by(asc(ProductModel.name))
-        elif sort_by == "name_desc":
-            stmt = stmt.order_by(desc(ProductModel.name))
-        elif sort_by == "newest":
-            stmt = stmt.order_by(desc(ProductModel.created_at))
-        else:  # trust_score_desc (default)
-            stmt = stmt.order_by(desc(VerdictModel.trust_score.nullslast()))
+        # Count by category
+        cat_counts = {}
+        for p in products:
+            cat = p["category"]
+            cat_counts[cat] = cat_counts.get(cat, 0) + 1
 
-        # Get total count before pagination
-        count_stmt = select(func.count(ProductModel.id)).select_from(stmt.subquery())
-        count_result = await session.execute(count_stmt)
-        total_count = count_result.scalar() or 0
-
-        # Apply pagination
-        stmt = stmt.limit(limit).offset(offset)
-
-        # Execute query
-        result = await session.execute(stmt)
-        products_with_verdicts = result.all()
-
-        # Format results
-        products = []
-        for product, verdict in products_with_verdicts:
-            products.append(
-                FilterService._format_product(product, verdict)
-            )
+        # Count by source
+        youtube_count = sum(1 for p in products if p["youtube_count"] > 0)
+        amazon_count = sum(1 for p in products if p["amazon_count"] > 0)
 
         return {
-            "products": products,
-            "total": total_count,
-            "limit": limit,
-            "offset": offset,
-            "hasMore": (offset + limit) < total_count,
+            "trust_score_range": [round(trust_min, 1), round(trust_max, 1)],
+            "auth_score_range": [auth_min, auth_max],
+            "sources": [
+                {"label": "YouTube", "value": "youtube", "count": youtube_count},
+                {"label": "Amazon", "value": "amazon", "count": amazon_count},
+            ],
+            "confidence_tiers": [
+                {"label": "Early", "value": "early", "count": tier_counts.get("early", 0)},
+                {"label": "Growing", "value": "growing", "count": tier_counts.get("growing", 0)},
+                {"label": "Established", "value": "established", "count": tier_counts.get("established", 0)},
+                {"label": "Mature", "value": "mature", "count": tier_counts.get("mature", 0)},
+            ],
+            "categories": [
+                {"label": cat.replace("-", " ").title(), "value": cat, "count": count}
+                for cat, count in sorted(cat_counts.items(), key=lambda x: -x[1])
+            ],
+            "total_products": len(products),
         }
 
     @staticmethod
-    async def search_products(
-        session: AsyncSession,
-        locale: str,
-        query: str,
-        category: Optional[str] = None,
-        trust_score_min: Optional[float] = None,
-        sort_by: str = "trust_score_desc",
-        limit: int = 20,
-        offset: int = 0,
-    ) -> dict:
-        """Full-text search with filters."""
-        # Build query - search in name and brand
-        search_filter = or_(
-            ProductModel.name.ilike(f"%{query}%"),
-            ProductModel.brand.ilike(f"%{query}%"),
-            ProductModel.category.ilike(f"%{query}%"),
-        )
+    def filter_products(filters: dict) -> list[dict]:
+        """Filter products based on filter parameters."""
+        products = MOCK_PRODUCTS
 
-        stmt = (
-            select(ProductModel, VerdictModel)
-            .outerjoin(VerdictModel, ProductModel.id == VerdictModel.product_id)
-            .where(
-                and_(
-                    ProductModel.locale == locale,
-                    search_filter,
-                )
-            )
-        )
+        # Filter by trust score
+        trust_min = filters.get("trust_score_min", 0.0)
+        trust_max = filters.get("trust_score_max", 10.0)
+        products = [p for p in products if trust_min <= p["trust_score"] <= trust_max]
 
-        # Apply optional filters
+        # Filter by auth score
+        auth_min = filters.get("auth_score_min", 0)
+        products = [p for p in products if p["auth_score_avg"] >= auth_min]
+
+        # Filter by source
+        source = filters.get("source", "all")
+        if source == "youtube":
+            products = [p for p in products if p["youtube_count"] > 0]
+        elif source == "amazon":
+            products = [p for p in products if p["amazon_count"] > 0]
+
+        # Filter by confidence tier
+        confidence_tiers = filters.get("confidence_tiers", [])
+        if confidence_tiers:
+            products = [p for p in products if p["confidence_tier"] in confidence_tiers]
+
+        # Filter by category
+        category = filters.get("category")
         if category:
-            stmt = stmt.where(ProductModel.category == category)
+            products = [p for p in products if p["category"] == category]
 
-        if trust_score_min is not None:
-            stmt = stmt.where(VerdictModel.trust_score >= Decimal(str(trust_score_min)))
+        # Sort
+        sort_by = filters.get("sort_by", "score")
+        if sort_by == "score":
+            products = sorted(products, key=lambda p: -p["trust_score"])
+        elif sort_by == "name":
+            products = sorted(products, key=lambda p: p["name"])
 
-        # Apply sorting
-        if sort_by == "trust_score_asc":
-            stmt = stmt.order_by(asc(VerdictModel.trust_score.nullsfirst()))
-        elif sort_by == "name_asc":
-            stmt = stmt.order_by(asc(ProductModel.name))
-        else:
-            stmt = stmt.order_by(desc(VerdictModel.trust_score.nullslast()))
+        # Pagination
+        offset = filters.get("offset", 0)
+        limit = filters.get("limit", 20)
+        products = products[offset : offset + limit]
 
-        # Get count
-        count_stmt = select(func.count(ProductModel.id)).select_from(stmt.subquery())
-        count_result = await session.execute(count_stmt)
-        total_count = count_result.scalar() or 0
-
-        # Paginate
-        stmt = stmt.limit(limit).offset(offset)
-        result = await session.execute(stmt)
-        products_with_verdicts = result.all()
-
-        products = [
-            FilterService._format_product(product, verdict)
-            for product, verdict in products_with_verdicts
-        ]
-
-        return {
-            "products": products,
-            "query": query,
-            "total": total_count,
-            "limit": limit,
-            "offset": offset,
-            "hasMore": (offset + limit) < total_count,
-        }
-
-    @staticmethod
-    def _format_product(product: ProductModel, verdict: Optional[VerdictModel]):
-        """Format product with verdict for response."""
-        return {
-            "id": str(product.id),
-            "name": product.name,
-            "slug": product.slug,
-            "category": product.category,
-            "brand": product.brand,
-            "locale": product.locale,
-            "trustScore": float(verdict.trust_score) if verdict and verdict.trust_score else None,
-            "confidenceTier": verdict.confidence_tier if verdict else None,
-            "sourceCountYT": verdict.source_count_yt if verdict else 0,
-            "sourceCountAMZ": verdict.source_count_amz if verdict else 0,
-        }
-
-    @staticmethod
-    async def get_available_brands(
-        session: AsyncSession,
-        locale: str,
-        category: Optional[str] = None,
-    ) -> list[str]:
-        """Get list of available brands for filtering."""
-        stmt = select(ProductModel.brand.distinct()).where(ProductModel.locale == locale)
-
-        if category:
-            stmt = stmt.where(ProductModel.category == category)
-
-        stmt = stmt.order_by(ProductModel.brand)
-
-        result = await session.execute(stmt)
-        brands = [row[0] for row in result.all() if row[0]]
-        return brands
-
-    @staticmethod
-    async def get_trust_score_range(
-        session: AsyncSession,
-        locale: str,
-        category: Optional[str] = None,
-    ) -> dict:
-        """Get min/max trust scores for a locale/category."""
-        stmt = select(
-            func.min(VerdictModel.trust_score).label("min"),
-            func.max(VerdictModel.trust_score).label("max"),
-        ).select_from(VerdictModel).join(ProductModel)
-
-        filters = [ProductModel.locale == locale]
-        if category:
-            filters.append(ProductModel.category == category)
-
-        stmt = stmt.where(and_(*filters))
-
-        result = await session.execute(stmt)
-        min_score, max_score = result.one()
-
-        return {
-            "min": float(min_score) if min_score else 0.0,
-            "max": float(max_score) if max_score else 10.0,
-        }
+        return products

@@ -1,12 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Query, Depends
 from pydantic import BaseModel
-from sqlalchemy.ext.asyncio import AsyncSession
-from slugify import slugify
-from backend.db.connection import get_db_session
-from backend.cache import get_verdict
-from backend.pipeline.orchestrator import run_pipeline
-from backend.db import repositories as repos
 import logging
+from sqlalchemy.ext.asyncio import AsyncSession
+from backend.db.connection import get_db_session
+from backend.services.search_service import SearchService
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -15,33 +12,75 @@ router = APIRouter()
 class SearchRequest(BaseModel):
     product_name: str
     locale: str = "in"
+    trust_score_min: float = 0.0
+    trust_score_max: float = 10.0
+    auth_score_min: int = 0
+    source: str = "all"
+    confidence_tiers: list[str] = []
+    category: str | None = None
+    sort_by: str = "score"
+    limit: int = 20
+    offset: int = 0
 
 
 @router.post("/api/v1/search")
 async def search(request: SearchRequest, session: AsyncSession = Depends(get_db_session)):
-    """Search for product and run full verdict pipeline."""
-    logger.info(f"Search request: {request.product_name} ({request.locale})")
+    """Search for products with filters and return list of verdicts."""
+    logger.info(f"Search: {request.product_name}")
 
-    slug = slugify(request.product_name)
-
-    # Step 1: Check cache
-    cached_verdict = await get_verdict(request.locale, slug)
-    if cached_verdict:
-        logger.info(f"Cache hit for {request.locale}/{slug}")
-        return cached_verdict
-
-    # Step 2: Run full pipeline
-    verdict_card = await run_pipeline(request.product_name, request.locale, session)
-
-    if verdict_card is None:
-        # Log search miss
-        await repos.misses.upsert(session, request.product_name, request.locale)
-        await session.commit()
-        logger.warning(f"Pipeline failed for '{request.product_name}'")
-        raise HTTPException(
-            status_code=404,
-            detail=f"No reviews found for '{request.product_name}'. Search miss logged.",
+    try:
+        result = await SearchService.search_products(
+            session,
+            query=request.product_name,
+            trust_score_min=request.trust_score_min,
+            trust_score_max=request.trust_score_max,
+            auth_score_min=request.auth_score_min,
+            source=request.source,
+            confidence_tiers=request.confidence_tiers if request.confidence_tiers else None,
+            category=request.category,
+            limit=request.limit,
+            offset=request.offset,
         )
+        
+        return {
+            "total": result["total"],
+            "results": result["results"],
+            "filters_applied": {
+                "trust_score_min": request.trust_score_min,
+                "trust_score_max": request.trust_score_max,
+                "auth_score_min": request.auth_score_min,
+                "source": request.source,
+                "confidence_tiers": request.confidence_tiers,
+                "category": request.category,
+            },
+        }
+    except Exception as e:
+        logger.error(f"Search error: {e}")
+        return {
+            "total": 0,
+            "results": [],
+            "error": str(e),
+        }
 
-    await session.commit()
-    return verdict_card
+
+@router.get("/api/v1/search/filter-stats")
+async def get_filter_stats(
+    locale: str = Query("in"),
+    category: str | None = Query(None),
+    session: AsyncSession = Depends(get_db_session),
+):
+    """Get available filter ranges and options from database."""
+    try:
+        stats = await SearchService.get_filter_stats(session, category=category)
+        return stats
+    except Exception as e:
+        logger.error(f"Filter stats error: {e}")
+        return {
+            "trust_score_range": [0, 10],
+            "auth_score_range": [0, 100],
+            "sources": [],
+            "confidence_tiers": [],
+            "categories": [],
+            "total_products": 0,
+            "error": str(e),
+        }

@@ -1,8 +1,8 @@
 """Routes for verdict ratings."""
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Request, Depends
 from uuid import UUID
 from backend.db import repositories as repos
-from backend.config import get_db
+from backend.db.connection import get_db_session
 import logging
 
 logger = logging.getLogger(__name__)

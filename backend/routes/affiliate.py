@@ -2,7 +2,7 @@
 from fastapi import APIRouter, HTTPException
 from uuid import UUID
 from backend.db import repositories as repos
-from backend.config import get_db
+from backend.db.connection import get_db_session
 import logging
 
 logger = logging.getLogger(__name__)
@@ -16,7 +16,7 @@ async def get_affiliate_link(
 ):
     """Get affiliate link for a product."""
     if db is None:
-        db = get_db()
+        db = get_db_session()
 
     try:
         async with db.session() as session:
@@ -50,7 +50,7 @@ async def record_affiliate_click(
 ):
     """Record a click on an affiliate link (for tracking)."""
     if db is None:
-        db = get_db()
+        db = get_db_session()
 
     try:
         async with db.session() as session:

@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from uuid import UUID
 from pydantic import BaseModel
 from backend.db import repositories as repos
-from backend.config import get_db
+from backend.db.connection import get_db_session
 import logging
 
 logger = logging.getLogger(__name__)
@@ -29,7 +29,7 @@ async def get_current_user(
 ):
     """Get current user profile."""
     if db is None:
-        db = get_db()
+        db = get_db_session()
 
     if not user_id:
         raise HTTPException(status_code=401, detail="Not authenticated")
@@ -67,7 +67,7 @@ async def update_preferences(
 ):
     """Update user preferences."""
     if db is None:
-        db = get_db()
+        db = get_db_session()
 
     try:
         async with db.session() as session:
@@ -110,7 +110,7 @@ async def get_preferences(
 ):
     """Get user preferences."""
     if db is None:
-        db = get_db()
+        db = get_db_session()
 
     try:
         async with db.session() as session:
@@ -139,7 +139,7 @@ async def create_saved_search(
 ):
     """Create a saved search."""
     if db is None:
-        db = get_db()
+        db = get_db_session()
 
     try:
         async with db.session() as session:
@@ -183,7 +183,7 @@ async def get_saved_searches(
 ):
     """Get all saved searches for a user."""
     if db is None:
-        db = get_db()
+        db = get_db_session()
 
     try:
         async with db.session() as session:
@@ -226,7 +226,7 @@ async def delete_saved_search(
 ):
     """Delete a saved search."""
     if db is None:
-        db = get_db()
+        db = get_db_session()
 
     try:
         async with db.session() as session:

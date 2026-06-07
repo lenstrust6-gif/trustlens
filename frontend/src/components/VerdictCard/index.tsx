@@ -1,65 +1,290 @@
 import { VerdictCard as VerdictCardType } from '@/lib/types'
 import TrustScore from './TrustScore'
 
+const CATEGORY_LABELS: Record<string, string> = {
+  'power-banks': '🔋 Power Banks',
+  'tws-earbuds': '🎧 TWS Earbuds',
+  'smartwatches': '⌚ Smartwatches',
+  'headphones': '🎧 Headphones',
+  'speakers': '🔊 Speakers',
+}
+
+const FEATURE_LABELS: Record<string, string> = {
+  soundQuality: 'Sound Quality',
+  batteryLife: 'Battery Life',
+  buildQuality: 'Build Quality',
+  comfort: 'Comfort',
+  noiseIsolation: 'Noise Isolation',
+  display: 'Display',
+  fitnessTracking: 'Fitness Tracking',
+  performanceSpeed: 'Performance',
+  capacity: 'Capacity',
+  chargingSpeed: 'Charging Speed',
+  portCount: 'Port Count',
+  portability: 'Portability',
+}
+
+function getBarColor(score: number): string {
+  if (score >= 7.5) return 'var(--green)'
+  if (score >= 5.0) return 'var(--amber)'
+  return 'var(--red)'
+}
+
 export default function VerdictCard({ card }: { card: VerdictCardType }) {
+  const categoryDisplay = CATEGORY_LABELS[card.product.category] || card.product.category
+
   return (
-    <div className="max-w-4xl mx-auto">
+    <div
+      style={{
+        maxWidth: '1100px',
+        margin: '0 auto',
+        padding: '60px 40px',
+        color: 'var(--text-primary)',
+      }}
+    >
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-2">{card.product.name}</h1>
-        <p className="text-gray-600">{card.product.category}</p>
+      <div style={{ marginBottom: '40px' }}>
+        <div
+          style={{
+            fontSize: '12px',
+            color: 'var(--text-muted)',
+            marginBottom: '12px',
+            letterSpacing: '0.1em',
+            textTransform: 'capitalize',
+          }}
+        >
+          {categoryDisplay}
+        </div>
+        <h1
+          style={{
+            fontSize: '48px',
+            fontFamily: 'var(--font-serif)',
+            fontWeight: 600,
+            marginBottom: '16px',
+            color: 'var(--text-primary)',
+          }}
+        >
+          {card.product.name}
+        </h1>
       </div>
 
       {/* TrustScore */}
-      <div className="mb-8">
+      <div style={{ marginBottom: '48px' }}>
         <TrustScore score={card.trustScore} tier={card.confidenceTier} />
       </div>
 
-      {/* Summary */}
-      <div className="mb-8 p-6 bg-gray-50 rounded-lg">
-        <p className="text-gray-800 leading-relaxed">{card.summary}</p>
+      {/* AI Summary */}
+      <div
+        style={{
+          marginBottom: '48px',
+          padding: '24px 28px',
+          background: 'rgba(37, 99, 235, 0.06)',
+          borderLeft: '3px solid var(--accent)',
+          borderRadius: '8px',
+        }}
+      >
+        <div
+          style={{
+            fontSize: '12px',
+            color: 'var(--text-muted)',
+            marginBottom: '12px',
+            textTransform: 'uppercase',
+            letterSpacing: '0.1em',
+          }}
+        >
+          ✦ AI Verdict
+        </div>
+        <p
+          style={{
+            fontSize: '15px',
+            fontFamily: 'var(--font-serif)',
+            fontStyle: 'italic',
+            lineHeight: '1.6',
+            color: 'var(--text-primary)',
+            maxWidth: '680px',
+          }}
+        >
+          {card.summary}
+        </p>
       </div>
 
       {/* Best For / Avoid If */}
-      <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="p-4 border border-green-200 rounded-lg">
-          <h3 className="font-semibold text-green-700 mb-3">✅ Best For</h3>
-          <ul className="space-y-2 text-sm text-gray-700">
+      <div
+        style={{
+          marginBottom: '48px',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+          gap: '24px',
+          alignItems: 'flex-start',
+        }}
+      >
+        <div
+          style={{
+            padding: '20px',
+            background: 'rgba(16, 185, 129, 0.06)',
+            border: '1px solid rgba(16, 185, 129, 0.2)',
+            borderRadius: '8px',
+            borderLeft: '3px solid var(--green)',
+            alignSelf: 'flex-start',
+          }}
+        >
+          <h3
+            style={{
+              fontSize: '13px',
+              fontWeight: 600,
+              color: 'var(--green)',
+              marginBottom: '16px',
+              textTransform: 'uppercase',
+              letterSpacing: '0.1em',
+            }}
+          >
+            ✓ Best For
+          </h3>
+          <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
             {card.bestFor.map((item, i) => (
-              <li key={i}>{item}</li>
+              <li
+                key={i}
+                style={{
+                  fontSize: '14px',
+                  color: 'var(--text-primary)',
+                  marginBottom: i < card.bestFor.length - 1 ? '8px' : 0,
+                  lineHeight: '1.5',
+                }}
+              >
+                {item}
+              </li>
             ))}
           </ul>
         </div>
-        <div className="p-4 border border-red-200 rounded-lg">
-          <h3 className="font-semibold text-red-700 mb-3">❌ Avoid If</h3>
-          <ul className="space-y-2 text-sm text-gray-700">
+
+        <div
+          style={{
+            padding: '20px',
+            background: 'rgba(239, 68, 68, 0.06)',
+            border: '1px solid rgba(239, 68, 68, 0.2)',
+            borderRadius: '8px',
+            borderLeft: '3px solid var(--red)',
+            alignSelf: 'flex-start',
+          }}
+        >
+          <h3
+            style={{
+              fontSize: '13px',
+              fontWeight: 600,
+              color: 'var(--red)',
+              marginBottom: '16px',
+              textTransform: 'uppercase',
+              letterSpacing: '0.1em',
+            }}
+          >
+            ✗ Avoid If
+          </h3>
+          <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
             {card.avoidIf.map((item, i) => (
-              <li key={i}>{item}</li>
+              <li
+                key={i}
+                style={{
+                  fontSize: '14px',
+                  color: 'var(--text-primary)',
+                  marginBottom: i < card.avoidIf.length - 1 ? '8px' : 0,
+                  lineHeight: '1.5',
+                }}
+              >
+                {item}
+              </li>
             ))}
           </ul>
         </div>
       </div>
 
       {/* Pros / Cons */}
-      <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div
+        style={{
+          marginBottom: '48px',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+          gap: '24px',
+        }}
+      >
         <div>
-          <h3 className="font-semibold mb-3 text-green-700">Pros</h3>
-          <ul className="space-y-2 text-sm">
+          <h3
+            style={{
+              fontSize: '13px',
+              fontWeight: 600,
+              color: 'var(--green)',
+              marginBottom: '16px',
+              textTransform: 'uppercase',
+              letterSpacing: '0.1em',
+            }}
+          >
+            Pros
+          </h3>
+          <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
             {card.pros.map((pro, i) => (
-              <li key={i} className="text-gray-700">
-                {pro.text}
-                <span className="text-gray-500 ml-2">({pro.mentions})</span>
+              <li
+                key={i}
+                style={{
+                  fontSize: '14px',
+                  color: 'var(--text-primary)',
+                  marginBottom: '12px',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'flex-start',
+                }}
+              >
+                <span style={{ flex: 1 }}>✓ {pro.text}</span>
+                <span
+                  style={{
+                    fontSize: '12px',
+                    color: 'var(--text-muted)',
+                    marginLeft: '12px',
+                    flexShrink: 0,
+                  }}
+                >
+                  ({pro.mentions})
+                </span>
               </li>
             ))}
           </ul>
         </div>
+
         <div>
-          <h3 className="font-semibold mb-3 text-red-700">Cons</h3>
-          <ul className="space-y-2 text-sm">
+          <h3
+            style={{
+              fontSize: '13px',
+              fontWeight: 600,
+              color: 'var(--red)',
+              marginBottom: '16px',
+              textTransform: 'uppercase',
+              letterSpacing: '0.1em',
+            }}
+          >
+            Cons
+          </h3>
+          <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
             {card.cons.map((con, i) => (
-              <li key={i} className="text-gray-700">
-                {con.text}
-                <span className="text-gray-500 ml-2">({con.mentions})</span>
+              <li
+                key={i}
+                style={{
+                  fontSize: '14px',
+                  color: 'var(--text-primary)',
+                  marginBottom: '12px',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'flex-start',
+                }}
+              >
+                <span style={{ flex: 1 }}>✗ {con.text}</span>
+                <span
+                  style={{
+                    fontSize: '12px',
+                    color: 'var(--text-muted)',
+                    marginLeft: '12px',
+                    flexShrink: 0,
+                  }}
+                >
+                  ({con.mentions})
+                </span>
               </li>
             ))}
           </ul>
@@ -67,17 +292,68 @@ export default function VerdictCard({ card }: { card: VerdictCardType }) {
       </div>
 
       {/* Feature Scores */}
-      <div className="mb-8">
-        <h3 className="font-semibold mb-4">Feature Scores</h3>
-        <div className="space-y-3">
+      <div style={{ marginBottom: '48px' }}>
+        <h2
+          style={{
+            fontSize: '18px',
+            fontWeight: 600,
+            color: 'var(--text-primary)',
+            marginBottom: '24px',
+            fontFamily: 'var(--font-body)',
+          }}
+        >
+          Feature Scores
+        </h2>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           {Object.entries(card.featureScores).map(([feature, score]) => (
             <div key={feature}>
-              <div className="flex justify-between text-sm mb-1">
-                <span className="capitalize text-gray-700">{feature.replace(/_/g, ' ')}</span>
-                <span className="font-semibold">{score.toFixed(1)}/10</span>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: '8px',
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: '14px',
+                    color: 'var(--text-primary)',
+                    fontWeight: 500,
+                  }}
+                >
+                  {FEATURE_LABELS[feature] || feature}
+                </span>
+                <span
+                  style={{
+                    fontSize: '14px',
+                    fontFamily: 'var(--font-mono)',
+                    color: 'var(--text-primary)',
+                    fontWeight: 600,
+                  }}
+                >
+                  {score.toFixed(1)}/10
+                </span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div className="bg-blue-600 h-2 rounded-full" style={{ width: `${(score / 10) * 100}%` }} />
+              <div
+                style={{
+                  width: '100%',
+                  height: '6px',
+                  background: 'rgba(255,255,255,0.10)',
+                  borderRadius: '3px',
+                  overflow: 'hidden',
+                  position: 'relative',
+                }}
+              >
+                <div
+                  style={{
+                    height: '100%',
+                    width: `${(score / 10) * 100}%`,
+                    background: getBarColor(score),
+                    borderRadius: '3px',
+                    transition: 'width 0.3s ease',
+                  }}
+                />
               </div>
             </div>
           ))}
@@ -85,24 +361,121 @@ export default function VerdictCard({ card }: { card: VerdictCardType }) {
       </div>
 
       {/* Source Panel */}
-      <div className="p-6 bg-gray-50 rounded-lg text-sm text-gray-600">
-        <h3 className="font-semibold text-gray-900 mb-3">Data Summary</h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div>
-            <p className="font-semibold text-gray-900">{card.sourcePanel.youtubeCount}</p>
-            <p>YouTube Comments</p>
+      <div
+        style={{
+          padding: '24px 28px',
+          background: 'rgba(255,255,255,0.04)',
+          border: '1px solid var(--border)',
+          borderRadius: '8px',
+        }}
+      >
+        <h3
+          style={{
+            fontSize: '13px',
+            fontWeight: 600,
+            color: 'var(--text-primary)',
+            marginBottom: '24px',
+            textTransform: 'uppercase',
+            letterSpacing: '0.1em',
+          }}
+        >
+          Data Summary
+        </h3>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(2, 1fr)',
+            gap: '24px',
+            maxWidth: '400px',
+          }}
+        >
+          <div style={{ textAlign: 'center' }}>
+            <div
+              style={{
+                fontSize: '22px',
+                fontFamily: 'var(--font-mono)',
+                fontWeight: 600,
+                color: 'var(--text-primary)',
+                marginBottom: '4px',
+              }}
+            >
+              {card.sourcePanel.youtubeCount}
+            </div>
+            <div
+              style={{
+                fontSize: '11px',
+                color: 'var(--text-muted)',
+                textTransform: 'capitalize',
+              }}
+            >
+              YouTube Comments
+            </div>
           </div>
-          <div>
-            <p className="font-semibold text-gray-900">{card.sourcePanel.amazonCount}</p>
-            <p>Amazon Reviews</p>
+          <div style={{ textAlign: 'center' }}>
+            <div
+              style={{
+                fontSize: '22px',
+                fontFamily: 'var(--font-mono)',
+                fontWeight: 600,
+                color: 'var(--text-primary)',
+                marginBottom: '4px',
+              }}
+            >
+              {card.sourcePanel.amazonCount}
+            </div>
+            <div
+              style={{
+                fontSize: '11px',
+                color: 'var(--text-muted)',
+                textTransform: 'capitalize',
+              }}
+            >
+              Amazon Reviews
+            </div>
           </div>
-          <div>
-            <p className="font-semibold text-gray-900">{card.sourcePanel.authScoreAvg.toFixed(0)}</p>
-            <p>Avg Auth Score</p>
+          <div style={{ textAlign: 'center' }}>
+            <div
+              style={{
+                fontSize: '22px',
+                fontFamily: 'var(--font-mono)',
+                fontWeight: 600,
+                color: 'var(--text-primary)',
+                marginBottom: '4px',
+              }}
+            >
+              {card.sourcePanel.authScoreAvg.toFixed(0)}
+            </div>
+            <div
+              style={{
+                fontSize: '11px',
+                color: 'var(--text-muted)',
+                textTransform: 'capitalize',
+              }}
+            >
+              Avg Auth Score
+            </div>
           </div>
-          <div>
-            <p className="font-semibold text-gray-900">{card.sourcePanel.excludedCount}</p>
-            <p>Excluded</p>
+          <div style={{ textAlign: 'center' }}>
+            <div
+              style={{
+                fontSize: '22px',
+                fontFamily: 'var(--font-mono)',
+                fontWeight: 600,
+                color: 'var(--text-primary)',
+                marginBottom: '4px',
+              }}
+            >
+              {card.sourcePanel.excludedCount}
+            </div>
+            <div
+              style={{
+                fontSize: '11px',
+                color: 'var(--text-muted)',
+                textTransform: 'capitalize',
+              }}
+            >
+              Excluded
+            </div>
           </div>
         </div>
       </div>

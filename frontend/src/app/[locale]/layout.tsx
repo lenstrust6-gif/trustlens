@@ -1,5 +1,8 @@
 import { notFound } from 'next/navigation'
 import { LOCALE_CONFIG } from '@/lib/locale'
+import NavBar from '@/components/home/NavBar'
+import { AuthProvider } from '@/components/providers/AuthProvider'
+import '@/styles/trustlens-theme.css'
 
 export function generateStaticParams() {
   return Object.keys(LOCALE_CONFIG).map((locale) => ({ locale }))
@@ -20,19 +23,30 @@ export default async function LocaleLayout({
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <nav className="border-b border-gray-200 py-4 px-6 sticky top-0 bg-white z-50">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <div className="text-2xl font-bold">TrustLens</div>
-          <div className="flex items-center gap-6">
-            <span className="text-sm text-gray-600">{localeConfig.flag} {localeConfig.name}</span>
-          </div>
-        </div>
-      </nav>
-      <main className="flex-1">{children}</main>
-      <footer className="border-t border-gray-200 py-6 px-6 text-center text-sm text-gray-500">
-        <p>&copy; 2026 TrustLens. Product reviews for India, by Indians.</p>
-      </footer>
-    </div>
+    <AuthProvider>
+      <div
+        style={{
+          minHeight: '100vh',
+          display: 'flex',
+          flexDirection: 'column',
+          background: 'var(--bg)',
+          color: 'var(--text-primary)',
+        }}
+      >
+        <NavBar locale={locale} />
+        <main style={{ flex: 1 }}>{children}</main>
+        <footer
+          style={{
+            borderTop: '1px solid var(--border)',
+            padding: '24px 40px',
+            textAlign: 'center',
+            fontSize: '12px',
+            color: 'var(--text-muted)',
+          }}
+        >
+          <p>&copy; 2026 TrustLens. Product reviews for India, by Indians.</p>
+        </footer>
+      </div>
+    </AuthProvider>
   )
 }

@@ -1,33 +1,123 @@
-import ConfidenceTier from '@/components/shared/ConfidenceTier'
-
 interface TrustScoreProps {
   score: number
   tier: 'early' | 'growing' | 'established' | 'mature'
 }
 
-function getScoreColor(score: number): string {
-  if (score < 5) return 'text-red-600'
-  if (score < 6.9) return 'text-amber-600'
-  if (score < 9) return 'text-green-600'
-  return 'text-emerald-600'
-}
-
-function getScoreBgColor(score: number): string {
-  if (score < 5) return 'bg-red-50 border-red-200'
-  if (score < 6.9) return 'bg-amber-50 border-amber-200'
-  if (score < 9) return 'bg-green-50 border-green-200'
-  return 'bg-emerald-50 border-emerald-200'
+const TIER_LABELS: Record<string, string> = {
+  early: '🚀 Early',
+  growing: '📈 Growing',
+  established: '📊 Established',
+  mature: '✨ Mature',
 }
 
 export default function TrustScore({ score, tier }: TrustScoreProps) {
+  const percentage = (score / 10) * 100
+
   return (
-    <div className={`p-6 border rounded-lg ${getScoreBgColor(score)}`}>
-      <div className="flex items-center justify-between mb-4">
-        <div>
-          <div className={`text-5xl font-bold ${getScoreColor(score)}`}>{score.toFixed(1)}</div>
-          <p className="text-gray-600 text-sm mt-1">/10 TrustScore</p>
+    <div
+      style={{
+        padding: '28px',
+        background: '#0A0D12',
+        border: '1px solid rgba(255,255,255,0.1)',
+        borderRadius: '10px',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
+        gap: '32px',
+      }}
+    >
+      {/* Score Block */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        {/* Score Number */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'baseline',
+            gap: '4px',
+          }}
+        >
+          <span
+            style={{
+              fontSize: '52px',
+              fontFamily: 'var(--font-mono)',
+              fontWeight: 600,
+              color: 'var(--accent)',
+            }}
+          >
+            {score.toFixed(1)}
+          </span>
+          <span
+            style={{
+              fontSize: '14px',
+              color: 'var(--text-muted)',
+              fontFamily: 'var(--font-mono)',
+            }}
+          >
+            /10 TrustScore
+          </span>
         </div>
-        <ConfidenceTier tier={tier} />
+
+        {/* Progress Bar */}
+        <div
+          style={{
+            width: '200px',
+            height: '4px',
+            background: 'rgba(255,255,255,0.08)',
+            borderRadius: '2px',
+            overflow: 'hidden',
+          }}
+        >
+          <div
+            style={{
+              height: '100%',
+              width: `${percentage}%`,
+              background: 'var(--accent)',
+              borderRadius: '2px',
+            }}
+          />
+        </div>
+
+        {/* Badges Row */}
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+          {/* Recommendation Badge */}
+          <div
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              padding: '4px 12px',
+              background: 'rgba(16, 185, 129, 0.15)',
+              border: '1px solid rgba(16, 185, 129, 0.3)',
+              borderRadius: '4px',
+              fontSize: '12px',
+              fontWeight: 600,
+              color: 'var(--green)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.05em',
+            }}
+          >
+            ✓ Recommended
+          </div>
+
+          {/* Tier Badge */}
+          <div
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '4px 12px',
+              background: 'rgba(37, 99, 235, 0.1)',
+              border: '1px solid rgba(37, 99, 235, 0.2)',
+              borderRadius: '4px',
+              fontSize: '12px',
+              fontWeight: 600,
+              color: 'var(--accent)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.05em',
+            }}
+          >
+            📊 {TIER_LABELS[tier]}
+          </div>
+        </div>
       </div>
     </div>
   )

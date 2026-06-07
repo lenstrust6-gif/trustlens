@@ -2,7 +2,7 @@
 from fastapi import APIRouter, HTTPException, Query
 from typing import Optional
 from backend.services.filter_service import FilterService
-from backend.config import get_db
+from backend.db.connection import get_db_session
 import logging
 
 logger = logging.getLogger(__name__)
@@ -23,7 +23,7 @@ async def filter_products(
 ):
     """Filter products by multiple criteria with pagination."""
     if db is None:
-        db = get_db()
+        db = get_db_session()
 
     try:
         # Parse brands list
@@ -75,7 +75,7 @@ async def search_products(
 ):
     """Full-text search with optional filters."""
     if db is None:
-        db = get_db()
+        db = get_db_session()
 
     try:
         async with db.session() as session:
@@ -109,7 +109,7 @@ async def get_available_brands(
 ):
     """Get list of available brands for filtering."""
     if db is None:
-        db = get_db()
+        db = get_db_session()
 
     try:
         async with db.session() as session:
@@ -139,7 +139,7 @@ async def get_trust_score_range(
 ):
     """Get trust score range for filtering."""
     if db is None:
-        db = get_db()
+        db = get_db_session()
 
     try:
         async with db.session() as session:

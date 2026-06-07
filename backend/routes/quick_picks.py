@@ -1,7 +1,7 @@
 """Routes for category quick picks."""
 from fastapi import APIRouter, HTTPException
 from backend.services.quick_picks_service import QuickPicksService
-from backend.config import get_db
+from backend.db.connection import get_db_session
 import logging
 
 logger = logging.getLogger(__name__)
@@ -16,7 +16,7 @@ async def get_category_quick_picks(
 ):
     """Get quick picks for a specific category (Best Overall, Budget, Premium)."""
     if db is None:
-        db = get_db()
+        db = get_db_session()
 
     try:
         async with db.session() as session:
@@ -45,7 +45,7 @@ async def get_all_categories_quick_picks(
 ):
     """Get quick picks for all categories in a locale."""
     if db is None:
-        db = get_db()
+        db = get_db_session()
 
     try:
         async with db.session() as session:
