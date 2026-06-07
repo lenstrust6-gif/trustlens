@@ -194,7 +194,6 @@ export default function SearchContent({ locale }: SearchContentProps) {
                 fontSize: '14px',
                 fontWeight: 600,
                 transition: 'all var(--transition-fast)',
-                display: 'flex',
               }}
               className="md:hidden"
               onMouseEnter={(e) => {
