@@ -1,0 +1,7 @@
+backend/
+.git/
+.gitignore
+*.md
+pyproject.toml
+poetry.lock
+requirements.txt
