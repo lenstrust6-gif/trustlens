@@ -31,7 +31,21 @@ function getBarColor(score: number): string {
 }
 
 export default function VerdictCard({ card }: { card: VerdictCardType }) {
-  const categoryDisplay = CATEGORY_LABELS[card.product.category] || card.product.category
+  // Safely provide defaults for all card properties
+  const safeCard = {
+    ...card,
+    product: card?.product || { name: 'Unknown', category: 'unknown', slug: '', locale: 'in' },
+    bestFor: card?.bestFor || [],
+    avoidIf: card?.avoidIf || [],
+    pros: card?.pros || [],
+    cons: card?.cons || [],
+    featureScores: card?.featureScores || {},
+    specTags: card?.specTags || {},
+    reviewHighlights: card?.reviewHighlights || [],
+    sourcePanel: card?.sourcePanel || { youtubeCount: 0, amazonCount: 0, authScoreAvg: 0, excludedCount: 0, lastRefreshed: new Date().toISOString() },
+  }
+
+  const categoryDisplay = CATEGORY_LABELS[safeCard.product.category] || safeCard.product.category
 
   return (
     <div
@@ -64,13 +78,13 @@ export default function VerdictCard({ card }: { card: VerdictCardType }) {
             color: 'var(--text-primary)',
           }}
         >
-          {card.product.name}
+          {safeCard.product.name}
         </h1>
       </div>
 
       {/* TrustScore */}
       <div style={{ marginBottom: '48px' }}>
-        <TrustScore score={card.trustScore} tier={card.confidenceTier} />
+        <TrustScore score={safeCard.trustScore} tier={safeCard.confidenceTier} />
       </div>
 
       {/* AI Summary */}
@@ -104,7 +118,7 @@ export default function VerdictCard({ card }: { card: VerdictCardType }) {
             maxWidth: '680px',
           }}
         >
-          {card.summary}
+          {safeCard.summary}
         </p>
       </div>
 
@@ -141,13 +155,13 @@ export default function VerdictCard({ card }: { card: VerdictCardType }) {
             ✓ Best For
           </h3>
           <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-            {card.bestFor.map((item, i) => (
+            {safeCard.bestFor.map((item, i) => (
               <li
                 key={i}
                 style={{
                   fontSize: '14px',
                   color: 'var(--text-primary)',
-                  marginBottom: i < card.bestFor.length - 1 ? '8px' : 0,
+                  marginBottom: i < safeCard.bestFor.length - 1 ? '8px' : 0,
                   lineHeight: '1.5',
                 }}
               >
@@ -180,13 +194,13 @@ export default function VerdictCard({ card }: { card: VerdictCardType }) {
             ✗ Avoid If
           </h3>
           <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-            {card.avoidIf.map((item, i) => (
+            {safeCard.avoidIf.map((item, i) => (
               <li
                 key={i}
                 style={{
                   fontSize: '14px',
                   color: 'var(--text-primary)',
-                  marginBottom: i < card.avoidIf.length - 1 ? '8px' : 0,
+                  marginBottom: i < safeCard.avoidIf.length - 1 ? '8px' : 0,
                   lineHeight: '1.5',
                 }}
               >
@@ -220,7 +234,7 @@ export default function VerdictCard({ card }: { card: VerdictCardType }) {
             Pros
           </h3>
           <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-            {card.pros.map((pro, i) => (
+            {safeCard.pros.map((pro, i) => (
               <li
                 key={i}
                 style={{
@@ -262,7 +276,7 @@ export default function VerdictCard({ card }: { card: VerdictCardType }) {
             Cons
           </h3>
           <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-            {card.cons.map((con, i) => (
+            {safeCard.cons.map((con, i) => (
               <li
                 key={i}
                 style={{
@@ -305,7 +319,7 @@ export default function VerdictCard({ card }: { card: VerdictCardType }) {
           Feature Scores
         </h2>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          {Object.entries(card.featureScores).map(([feature, score]) => (
+          {Object.entries(safeCard.featureScores).map(([feature, score]) => (
             <div key={feature}>
               <div
                 style={{
@@ -399,7 +413,7 @@ export default function VerdictCard({ card }: { card: VerdictCardType }) {
                 marginBottom: '4px',
               }}
             >
-              {card.sourcePanel.youtubeCount}
+              {safeCard.sourcePanel.youtubeCount}
             </div>
             <div
               style={{
@@ -421,7 +435,7 @@ export default function VerdictCard({ card }: { card: VerdictCardType }) {
                 marginBottom: '4px',
               }}
             >
-              {card.sourcePanel.amazonCount}
+              {safeCard.sourcePanel.amazonCount}
             </div>
             <div
               style={{
@@ -443,7 +457,7 @@ export default function VerdictCard({ card }: { card: VerdictCardType }) {
                 marginBottom: '4px',
               }}
             >
-              {card.sourcePanel.authScoreAvg.toFixed(0)}
+              {safeCard.sourcePanel.authScoreAvg.toFixed(0)}
             </div>
             <div
               style={{
@@ -465,7 +479,7 @@ export default function VerdictCard({ card }: { card: VerdictCardType }) {
                 marginBottom: '4px',
               }}
             >
-              {card.sourcePanel.excludedCount}
+              {safeCard.sourcePanel.excludedCount}
             </div>
             <div
               style={{

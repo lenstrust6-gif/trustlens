@@ -10,6 +10,9 @@ interface SearchResultsProps {
 }
 
 export default function SearchResults({ results, loading, error }: SearchResultsProps) {
+  console.log('[SearchResults] Render with props:', { results, loading, error })
+  console.log('[SearchResults] Results type:', typeof results, 'Is array:', Array.isArray(results))
+
   if (loading) {
     return (
       <div style={{ textAlign: 'center', padding: '48px 0', color: 'var(--text-muted)', fontSize: '16px' }}>
@@ -34,7 +37,11 @@ export default function SearchResults({ results, loading, error }: SearchResults
     )
   }
 
-  if (!results || results.length === 0) {
+  // Safely handle results
+  const safeResults = Array.isArray(results) ? results : []
+  console.log('[SearchResults] Safe results count:', safeResults.length)
+
+  if (!safeResults || safeResults.length === 0) {
     return (
       <div style={{ textAlign: 'center', padding: '48px 0', color: 'var(--text-muted)' }}>
         <p>No products found. Try adjusting your filters.</p>
@@ -44,11 +51,22 @@ export default function SearchResults({ results, loading, error }: SearchResults
 
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '48px' }}>
-      {results.map((verdict) => (
-        <div key={verdict.product.slug}>
-          <VerdictCard card={verdict} />
-        </div>
-      ))}
+      {safeResults.map((verdict) => {
+        try {
+          return (
+            <div key={verdict?.product?.slug || Math.random()}>
+              <VerdictCard card={verdict} />
+            </div>
+          )
+        } catch (err) {
+          console.error('[SearchResults] Error rendering verdict:', verdict, err)
+          return (
+            <div key={Math.random()} style={{ color: 'red', padding: '20px' }}>
+              Error rendering result
+            </div>
+          )
+        }
+      })}
     </div>
   )
 }
