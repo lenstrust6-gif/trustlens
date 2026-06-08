@@ -33,9 +33,13 @@ export default function SubmitPage({ params }: { params: Promise<{ locale: strin
       }
 
       const data = await res.json()
-      setMessage(data.message)
-      setProductName('')
-      setEmail('')
+      if (data.message) {
+        setMessage(data.message)
+        setProductName('')
+        setEmail('')
+      } else {
+        setError('Invalid response from server')
+      }
     } catch (err) {
       setError('Failed to submit. Please try again.')
     } finally {

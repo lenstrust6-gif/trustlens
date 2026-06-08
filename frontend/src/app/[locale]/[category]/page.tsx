@@ -60,11 +60,11 @@ export default function CategoryPage({
         )
         const data = await res.json()
 
-        if (data.status === 'ok') {
+        if (data.status === 'ok' && data.quickPicks) {
           setQuickPicks({
-            best_overall: data.quickPicks.best_overall,
-            budget: data.quickPicks.budget,
-            premium: data.quickPicks.premium,
+            best_overall: data.quickPicks.best_overall || null,
+            budget: data.quickPicks.budget || null,
+            premium: data.quickPicks.premium || null,
           })
         }
       } catch (error) {
@@ -93,8 +93,10 @@ export default function CategoryPage({
         const res = await fetch(`${API_URL}/api/v1/products/filter?${params.toString()}`)
         const data = await res.json()
 
-        if (data.status === 'ok') {
+        if (data.status === 'ok' && Array.isArray(data.products)) {
           setProducts(data.products)
+        } else {
+          setProducts([])
         }
       } catch (error) {
         console.error('Error fetching products:', error)
@@ -115,8 +117,10 @@ export default function CategoryPage({
         )
         const data = await res.json()
 
-        if (data.status === 'ok') {
+        if (data.status === 'ok' && Array.isArray(data.brands)) {
           setBrands(data.brands)
+        } else {
+          setBrands([])
         }
       } catch (error) {
         console.error('Error fetching brands:', error)

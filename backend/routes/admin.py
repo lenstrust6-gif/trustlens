@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from backend.db.connection import get_db_session
 from backend.db import repositories as repos
+from backend.cache import redis_client, get_hit_rate
 import logging
 
 logger = logging.getLogger(__name__)
@@ -16,13 +17,14 @@ async def get_stats(session: AsyncSession = Depends(get_db_session)):
         verdicts = await repos.verdicts.get_all_with_products(session)
         misses = await repos.misses.get_all_sorted_by_count(session)
         emails = await repos.emails.get_all(session)
+        cache_hit_rate = await get_hit_rate()
 
         return {
             "status": "ok",
             "total_products": len(products),
             "total_verdicts": len(verdicts),
             "pending_misses": len(misses),
-            "cache_hit_rate": 0.87,
+            "cache_hit_rate": cache_hit_rate,
             "emails_captured": len(emails),
         }
     except Exception as e:
@@ -84,12 +86,26 @@ async def get_emails(session: AsyncSession = Depends(get_db_session)):
 async def get_cache_stats(session: AsyncSession = Depends(get_db_session)):
     """Redis cache statistics."""
     try:
+        hit_rate = await get_hit_rate()
+
+        # Get additional cache info if Redis is available
+        key_count = 0
+        memory_usage_mb = 0
+        if redis_client:
+            try:
+                info = await redis_client.info()
+                key_count = sum(db_info.get('keys', 0) for db_info in [info] if isinstance(db_info, dict))
+                memory_bytes = info.get('used_memory', 0)
+                memory_usage_mb = round(memory_bytes / (1024 * 1024), 2)
+            except Exception:
+                pass
+
         return {
             "status": "ok",
             "cache": {
-                "hit_rate": 0.87,
-                "key_count": "N/A",
-                "memory_usage_mb": "N/A",
+                "hit_rate": hit_rate,
+                "key_count": key_count,
+                "memory_usage_mb": memory_usage_mb,
             },
         }
     except Exception as e:

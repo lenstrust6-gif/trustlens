@@ -30,6 +30,8 @@ class UserProfileResponse(BaseModel):
 
 
 # In-memory fallback for when DB is unavailable
+# WARNING: This is not persistent and will be lost on restart!
+# TODO: Replace with real database User model when schema is finalized
 _users_store: dict[str, dict] = {}
 
 
