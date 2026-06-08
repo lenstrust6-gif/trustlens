@@ -3,10 +3,20 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from backend.db.connection import get_db_session
 from backend.cache import get_verdict as cache_get_verdict
 from backend.db import repositories as repos
+from backend.db.models import ProductModel, VerdictModel
+from pydantic import BaseModel
 import logging
+from python_slugify import slugify
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
+
+
+class CreateProductRequest(BaseModel):
+    name: str
+    brand: str | None = None
+    category: str | None = None
+    locale: str = "in"
 
 
 @router.get("/api/v1/verdict/{locale}/{slug}")
@@ -62,3 +72,56 @@ async def get_verdict(locale: str, slug: str, session: AsyncSession = Depends(ge
 
     logger.info(f"Verdict served from DB: {locale}/{slug}")
     return verdict_dict
+
+
+@router.post("/api/v1/products")
+async def create_product(req: CreateProductRequest, session: AsyncSession = Depends(get_db_session)):
+    """Create a new product and queue it for YouTube data fetching."""
+    try:
+        slug = slugify(req.name)
+
+        # Check if product exists
+        existing = await repos.products.get_by_slug(session, slug, req.locale)
+        if existing:
+            raise HTTPException(status_code=400, detail=f"Product '{req.name}' already exists")
+
+        # Create product
+        product = ProductModel(
+            name=req.name,
+            slug=slug,
+            brand=req.brand,
+            category=req.category,
+            locale=req.locale
+        )
+        session.add(product)
+        await session.flush()
+
+        # Create empty verdict (will be filled by pipeline)
+        verdict = VerdictModel(
+            product_id=product.id,
+            confidence_tier="pending",
+            summary="Fetching YouTube data..."
+        )
+        session.add(verdict)
+        await session.commit()
+
+        logger.info(f"Created product: {req.name} ({slug})")
+        return {
+            "status": "created",
+            "product": {
+                "id": str(product.id),
+                "name": product.name,
+                "slug": product.slug,
+                "category": product.category,
+                "brand": product.brand,
+                "locale": product.locale,
+            },
+            "message": "Product created. YouTube data will be fetched shortly."
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error creating product: {e}")
+        await session.rollback()
+        raise HTTPException(status_code=500, detail=f"Error creating product: {str(e)}")
