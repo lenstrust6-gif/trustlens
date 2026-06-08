@@ -10,6 +10,12 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/users", tags=["users"])
 
 
+def get_current_user_id(authorization: str = None) -> str | None:
+    """Extract user ID from JWT token (placeholder)."""
+    # This would be replaced with actual JWT validation
+    return None
+
+
 class PreferencesUpdate(BaseModel):
     email_notifications: bool | None = None
     default_locale: str | None = None
@@ -247,9 +253,3 @@ async def delete_saved_search(
     except Exception as e:
         logger.error(f"Error deleting saved search: {str(e)}")
         raise HTTPException(status_code=500, detail="Error deleting saved search")
-
-
-def get_current_user_id(authorization: str = None) -> str | None:
-    """Extract user ID from JWT token (placeholder)."""
-    # This would be replaced with actual JWT validation
-    return None
