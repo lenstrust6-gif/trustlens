@@ -6,7 +6,15 @@ from backend.db import repositories as repos
 from backend.db.models import ProductModel, VerdictModel
 from pydantic import BaseModel
 import logging
-from python_slugify import slugify
+import re
+
+
+def slugify(text: str) -> str:
+    """Simple slug generator."""
+    text = text.lower()
+    text = re.sub(r'[^\w\s-]', '', text)
+    text = re.sub(r'[-\s]+', '-', text)
+    return text.strip('-')
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
