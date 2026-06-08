@@ -76,11 +76,15 @@ export const api = {
   async search(productName: string, locale: string, filters?: any): Promise<SearchResults> {
     const searchLower = productName.toLowerCase()
 
-    // Build request with filters
+    // Build request with filters (map frontend filter names to backend names)
     const searchBody: any = {
       product_name: productName,
       locale,
-      ...filters,
+      trust_score_min: filters?.trust_min ?? 0,
+      trust_score_max: filters?.trust_max ?? 10,
+      auth_score_min: filters?.auth_min ?? 0,
+      source: filters?.source ?? 'all',
+      confidence_tiers: filters?.confidence_tiers ?? [],
     }
 
     // Try API call first
