@@ -8,6 +8,7 @@ import { VerdictCard as VerdictCardType } from '@/lib/types'
 import FilterPanel, { SearchFiltersState } from '@/components/search/FilterPanel'
 import FilterChips from '@/components/search/FilterChips'
 import SearchResults from './search-results'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { Filter, X } from 'lucide-react'
 
 interface SearchContentProps {
@@ -100,6 +101,9 @@ export default function SearchContent({ locale }: SearchContentProps) {
     api
       .search(query, locale, filters)
       .then((data) => {
+        console.log('[SearchContent] API Response:', data)
+        console.log('[SearchContent] Results:', data.results)
+        console.log('[SearchContent] Results Type:', typeof data.results, 'Is Array:', Array.isArray(data.results))
         setResults(data.results || [])
         if (!data.results || data.results.length === 0) {
           setError('No products found matching your criteria')
@@ -229,7 +233,30 @@ export default function SearchContent({ locale }: SearchContentProps) {
           />
 
           {/* Search Results */}
-          <SearchResults results={results} loading={loading} error={error} />
+          <ErrorBoundary
+            fallback={(error) => (
+              <div style={{ padding: '20px', color: '#ff6b6b', background: 'rgba(255,107,107,0.1)', borderRadius: '8px' }}>
+                <h3>Error rendering search results</h3>
+                <p>{error?.message}</p>
+                <button
+                  onClick={() => window.location.reload()}
+                  style={{
+                    padding: '8px 16px',
+                    background: '#ff6b6b',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    marginTop: '10px',
+                  }}
+                >
+                  Reload Page
+                </button>
+              </div>
+            )}
+          >
+            <SearchResults results={results} loading={loading} error={error} />
+          </ErrorBoundary>
         </div>
       </div>
     </div>

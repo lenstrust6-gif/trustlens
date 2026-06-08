@@ -182,7 +182,17 @@ export const api = {
       })
 
       if (res.ok) {
-        return res.json()
+        const data = await res.json()
+        console.log('[FilterStats] Raw API response:', data)
+        // Return with proper defaults for missing fields
+        return {
+          trust_score_range: data.trust_score_range || [0, 10],
+          auth_score_range: data.auth_score_range || [0, 100],
+          sources: data.sources || [],
+          confidence_tiers: data.confidence_tiers || [],
+          categories: data.categories || [],
+          total_products: data.total_products || 0,
+        }
       }
     } catch (error) {
       console.error('Error fetching filter stats:', error)
