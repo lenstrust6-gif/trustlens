@@ -102,7 +102,33 @@ export const api = {
       clearTimeout(timeoutId)
 
       if (res.ok) {
-        return res.json()
+        const data = await res.json()
+        // Transform API response to match expected format
+        if (data?.results && Array.isArray(data.results)) {
+          data.results = data.results.map((r: any) => ({
+            product: r.product || {},
+            trustScore: r.trust_score ?? 0,
+            confidenceTier: r.confidence_tier || 'unknown',
+            summary: r.summary || '',
+            pros: r.pros || [],
+            cons: r.cons || [],
+            bestFor: r.best_for || [],
+            avoidIf: r.avoid_if || [],
+            featureScores: r.feature_scores || {},
+            specTags: r.spec_tags || {},
+            reviewHighlights: r.review_highlights || [],
+            sourcePanel: {
+              youtubeCount: r.source_count_yt || 0,
+              amazonCount: r.source_count_amz || 0,
+              authScoreAvg: r.auth_score_avg || 0,
+              excludedCount: r.reviews_excluded || 0,
+              lastRefreshed: new Date().toISOString(),
+            },
+            alternatives: [],
+            locale: r.locale || 'in',
+          }))
+        }
+        return data || { total: 0, results: [], filters_applied: {} }
       }
     } catch (error) {
       // Fall through to mock data
