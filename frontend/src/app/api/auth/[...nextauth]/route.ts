@@ -41,7 +41,7 @@ const authOptions: NextAuthOptions = {
     maxAge: 30 * 24 * 60 * 60,
   },
   jwt: {
-    secret: process.env.NEXTAUTH_SECRET,
+    secret: process.env.NEXTAUTH_SECRET || 'insecure-dev-secret-please-set-env-var',
     maxAge: 30 * 24 * 60 * 60,
   },
   pages: {

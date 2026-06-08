@@ -15,7 +15,12 @@ redis_client = None
 
 async def init_redis():
     global redis_client
-    redis_client = await from_url(settings.redis_url, decode_responses=True)
+    try:
+        redis_client = await from_url(settings.redis_url, decode_responses=True)
+        logger.info(f"Redis connected successfully")
+    except Exception as e:
+        logger.warning(f"Failed to connect to Redis: {e}")
+        redis_client = None
 
 
 async def close_redis():
@@ -37,6 +42,10 @@ def search_key(locale: str, query: str) -> str:
 
 
 async def get_verdict(locale: str, slug: str) -> dict | None:
+    if redis_client is None:
+        logger.debug(f"Redis unavailable, skipping cache lookup")
+        return None
+
     key = verdict_key(locale, slug)
     try:
         data = await redis_client.get(key)
@@ -51,6 +60,10 @@ async def get_verdict(locale: str, slug: str) -> dict | None:
 
 
 async def set_verdict(locale: str, slug: str, data: dict) -> bool:
+    if redis_client is None:
+        logger.debug(f"Redis unavailable, skipping cache write")
+        return False
+
     key = verdict_key(locale, slug)
     try:
         await redis_client.setex(key, VERDICT_TTL, json.dumps(data))
@@ -62,6 +75,10 @@ async def set_verdict(locale: str, slug: str, data: dict) -> bool:
 
 
 async def get_category(locale: str, category: str) -> dict | None:
+    if redis_client is None:
+        logger.debug(f"Redis unavailable, skipping cache lookup")
+        return None
+
     key = category_key(locale, category)
     try:
         data = await redis_client.get(key)
@@ -76,6 +93,10 @@ async def get_category(locale: str, category: str) -> dict | None:
 
 
 async def set_category(locale: str, category: str, data: dict) -> bool:
+    if redis_client is None:
+        logger.debug(f"Redis unavailable, skipping cache write")
+        return False
+
     key = category_key(locale, category)
     try:
         await redis_client.setex(key, CATEGORY_TTL, json.dumps(data))
@@ -87,6 +108,10 @@ async def set_category(locale: str, category: str, data: dict) -> bool:
 
 
 async def get_hit_rate() -> float:
+    if redis_client is None:
+        logger.debug(f"Redis unavailable, returning 0.0 hit rate")
+        return 0.0
+
     try:
         info = await redis_client.info()
         hits = info.get("keyspace_hits", 0)

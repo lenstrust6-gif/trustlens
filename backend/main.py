@@ -3,8 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from backend.config import settings
 from backend.cache import init_redis, close_redis
-from backend.routes import health, search, products, submit, categories, admin, auth
-# from backend.routes import ratings, quick_picks, filters, affiliate, users  # TODO: Fix these routes
+from backend.routes import health, search, products, submit, categories, admin, auth, ratings, quick_picks, filters, affiliate, users
 import logging
 
 logging.basicConfig(level=logging.INFO)
@@ -45,11 +44,11 @@ app.include_router(submit.router)
 app.include_router(categories.router)
 app.include_router(admin.router)
 app.include_router(auth.router)
-# app.include_router(ratings.router)  # TODO: Fix this route
-# app.include_router(quick_picks.router)  # TODO: Fix this route
-# app.include_router(filters.router)  # TODO: Fix this route
-# app.include_router(affiliate.router)  # TODO: Fix this route
-# app.include_router(users.router)  # TODO: Fix this route
+app.include_router(ratings.router)
+app.include_router(quick_picks.router)
+app.include_router(filters.router)
+app.include_router(affiliate.router)
+app.include_router(users.router)
 
 
 @app.get("/")
