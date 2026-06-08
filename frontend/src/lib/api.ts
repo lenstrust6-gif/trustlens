@@ -134,11 +134,7 @@ export const api = {
       }
     }
 
-    // If no matches, return all
-    if (filtered.length === 0) {
-      filtered = Object.values(MOCK_VERDICTS)
-    }
-
+    // Return filtered results (may be empty)
     return {
       total: filtered.length,
       results: filtered,
