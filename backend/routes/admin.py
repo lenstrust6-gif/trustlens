@@ -1,8 +1,11 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 from backend.db.connection import get_db_session
 from backend.db import repositories as repos
+from backend.db.models import ProductModel
 from backend.cache import redis_client, get_hit_rate
+from backend.pipeline.orchestrator import PipelineOrchestrator
 import logging
 
 logger = logging.getLogger(__name__)
@@ -110,4 +113,38 @@ async def get_cache_stats(session: AsyncSession = Depends(get_db_session)):
         }
     except Exception as e:
         logger.error(f"Cache stats failed: {e}")
+        return {"status": "error", "message": str(e)}
+
+
+@router.post("/admin/refresh-all")
+async def refresh_all_products(session: AsyncSession = Depends(get_db_session)):
+    """Trigger pipeline for all products to generate verdicts."""
+    try:
+        result = await session.execute(select(ProductModel))
+        products = result.scalars().all()
+
+        logger.info(f"Starting refresh for {len(products)} products")
+
+        refreshed = 0
+        failed = 0
+
+        for product in products:
+            try:
+                orchestrator = PipelineOrchestrator(session)
+                await orchestrator.run_pipeline(product.name, product.locale)
+                refreshed += 1
+                logger.info(f"✅ Refreshed: {product.name}")
+            except Exception as e:
+                failed += 1
+                logger.error(f"❌ Failed: {product.name} - {e}")
+
+        return {
+            "status": "ok",
+            "message": f"Refresh complete: {refreshed} success, {failed} failed",
+            "total": len(products),
+            "refreshed": refreshed,
+            "failed": failed,
+        }
+    except Exception as e:
+        logger.error(f"Refresh all failed: {e}")
         return {"status": "error", "message": str(e)}
