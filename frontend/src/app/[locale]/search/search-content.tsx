@@ -108,8 +108,19 @@ export default function SearchContent({ locale }: SearchContentProps) {
           console.log('[SearchContent] API Response:', data)
           console.log('[SearchContent] Results:', data.results)
           console.log('[SearchContent] Results Type:', typeof data.results, 'Is Array:', Array.isArray(data.results))
-          setResults(data.results || [])
-          if (!data.results || data.results.length === 0) {
+
+          // Deduplicate results by product slug (keep first occurrence)
+          const seen = new Set<string>()
+          const dedupedResults = (data.results || []).filter(result => {
+            const slug = result.product?.slug
+            if (!slug) return true
+            if (seen.has(slug)) return false
+            seen.add(slug)
+            return true
+          })
+
+          setResults(dedupedResults)
+          if (!dedupedResults || dedupedResults.length === 0) {
             setError('No products found matching your criteria')
           } else {
             setError(null)
