@@ -74,6 +74,7 @@ export interface SearchResults {
 
 export const api = {
   async search(productName: string, locale: string, filters?: any): Promise<SearchResults> {
+    console.log('[API.search] Called with:', { productName, locale, filters })
     const searchLower = productName.toLowerCase()
 
     // Build request with filters (map frontend filter names to backend names)
