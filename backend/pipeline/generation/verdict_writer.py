@@ -57,7 +57,7 @@ async def write_verdict(
     )
 
     try:
-        url = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={settings.google_api_key}"
+        url = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.0-pro:generateContent?key={settings.google_api_key}"
         payload = {
             "contents": [{
                 "parts": [{"text": prompt}]
