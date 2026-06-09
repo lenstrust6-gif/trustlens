@@ -13,15 +13,24 @@ class YouTubeFetcher:
 
     async def fetch_comments(self, product_name: str, locale: str) -> list[dict]:
         """
-        Fetch YouTube comments for a product.
+        Fetch YouTube comments for a product (multi-language support).
+        For India: fetches both Hindi and English comments.
         Returns list of comments with text, video_id, video_title, author, like_count, published_at.
         """
         if not settings.youtube_api_key:
             logger.warning("YouTube API key not configured")
             return []
 
-        # Step 1: Search for videos
-        video_ids = await self._search_videos(product_name, locale)
+        # Step 1: Search for videos in all relevant languages
+        languages = ["hi", "en"] if locale == "in" else ["en"]
+        video_ids = []
+        for lang in languages:
+            lang_videos = await self._search_videos(product_name, locale, lang)
+            video_ids.extend(lang_videos)
+            if len(video_ids) >= 10:  # Cap at 10 videos total
+                video_ids = video_ids[:10]
+                break
+
         if not video_ids:
             logger.info(f"YouTube: no videos found for '{product_name}'")
             return []
@@ -38,9 +47,11 @@ class YouTubeFetcher:
         logger.info(f"YouTube: fetched {len(comments)} comments from {len(video_ids)} videos")
         return comments
 
-    async def _search_videos(self, product_name: str, locale: str) -> list[tuple[str, str]]:
-        """Search for videos and return (video_id, title) tuples."""
-        lang = "hi" if locale == "in" else "en"
+    async def _search_videos(self, product_name: str, locale: str, lang: str = None) -> list[tuple[str, str]]:
+        """Search for videos in specified language and return (video_id, title) tuples."""
+        if not lang:
+            lang = "hi" if locale == "in" else "en"
+
         params = {
             "q": product_name,
             "type": "video",
