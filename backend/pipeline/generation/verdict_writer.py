@@ -51,12 +51,12 @@ async def write_verdict(
         cons_formatted=cons_formatted,
     )
 
-    # Use Groq Gemma 7B
-    verdict = await groq_chat(prompt, model="gemma-7b-it")
+    # Use Groq Llama 3.1 70B
+    verdict = await groq_chat(prompt, model="llama-3.1-70b-versatile")
     if verdict:
         word_count = len(verdict.split())
-        logger.info(f"Verdict written via Gemma ({word_count} words)")
+        logger.info(f"Verdict written via Llama 3.1 ({word_count} words)")
         return verdict
 
-    logger.error("Groq Gemma failed to write verdict")
+    logger.error("Groq Llama failed to write verdict")
     return f"TrustLens verdict pending for {product_name}. Check back soon."
