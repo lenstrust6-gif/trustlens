@@ -1,12 +1,14 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from sqlalchemy.ext.asyncio import AsyncSession
 from backend.db.connection import get_db_session
 from backend.cache import get_verdict as cache_get_verdict
 from backend.db import repositories as repos
 from backend.db.models import ProductModel, VerdictModel
+from backend.pipeline.orchestrator import run_pipeline
 from pydantic import BaseModel
 import logging
 import re
+import asyncio
 
 
 def slugify(text: str) -> str:
@@ -83,7 +85,11 @@ async def get_verdict(locale: str, slug: str, session: AsyncSession = Depends(ge
 
 
 @router.post("/api/v1/products")
-async def create_product(req: CreateProductRequest, session: AsyncSession = Depends(get_db_session)):
+async def create_product(
+    req: CreateProductRequest,
+    session: AsyncSession = Depends(get_db_session),
+    background_tasks: BackgroundTasks = BackgroundTasks()
+):
     """Create a new product and queue it for YouTube data fetching."""
     try:
         slug = slugify(req.name)
@@ -112,6 +118,15 @@ async def create_product(req: CreateProductRequest, session: AsyncSession = Depe
         )
         session.add(verdict)
         await session.commit()
+
+        # Trigger pipeline in background
+        logger.info(f"Triggering pipeline for: {req.name} ({req.locale})")
+        background_tasks.add_task(
+            run_pipeline,
+            product_name=req.name,
+            locale=req.locale,
+            session=session
+        )
 
         logger.info(f"Created product: {req.name} ({slug})")
         return {
