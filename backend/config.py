@@ -27,6 +27,7 @@ class Settings(BaseSettings):
     # AI
     groq_api_key: str = ""
     anthropic_api_key: str = ""
+    google_api_key: str = ""
     summary_model: str = "claude"
 
     # Email
