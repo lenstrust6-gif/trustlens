@@ -89,12 +89,25 @@ class YouTubeFetcher:
                 logger.info(f"[YouTube API] Status: {response.status_code} | Items found: {len(data.get('items', []))}")
 
                 items = data.get("items", [])
-                video_ids = [
-                    (item["id"]["videoId"], item["snippet"]["title"])
-                    for item in items
-                    if item.get("id", {}).get("videoId")
-                ]
-                logger.info(f"[YouTube Search] Found {len(video_ids)} videos for '{product_name}'")
+                logger.info(f"[YouTube API] Raw items count: {len(items)}")
+
+                # Debug: check first item structure
+                if items:
+                    logger.info(f"[YouTube API] Sample item keys: {list(items[0].keys())}")
+
+                video_ids = []
+                for item in items:
+                    try:
+                        video_id = item.get("id", {}).get("videoId")
+                        title = item.get("snippet", {}).get("title", "Unknown")
+
+                        if video_id:
+                            video_ids.append((video_id, title))
+                    except (KeyError, TypeError) as e:
+                        logger.warning(f"[YouTube API] Skipped malformed item: {str(e)}")
+                        continue
+
+                logger.info(f"[YouTube Search] Parsed {len(video_ids)} valid videos for '{product_name}'")
                 return video_ids
         except httpx.TimeoutException:
             logger.error(f"[YouTube Error] Search timeout for '{product_name}'")
@@ -106,6 +119,8 @@ class YouTubeFetcher:
             return []
         except Exception as e:
             logger.error(f"[YouTube Error] Exception: {type(e).__name__} - {str(e)}")
+            import traceback
+            logger.error(f"[YouTube Error] Traceback: {traceback.format_exc()}")
             return []
 
     async def _fetch_video_comments(self, video_id: str, video_title: str) -> list[dict]:
