@@ -1,6 +1,7 @@
 import { Suspense, ReactNode } from 'react'
 import type { Metadata } from 'next'
 import VerdictCard from '@/components/VerdictCard'
+import RelatedProducts from '@/components/product/RelatedProducts'
 import { api } from '@/lib/api'
 import { notFound } from 'next/navigation'
 
@@ -72,12 +73,13 @@ export default async function ProductPage({
 }: {
   params: Promise<{ locale: string; category: string; product: string }>
 }) {
-  const { locale, product } = await params
+  const { locale, product, category } = await params
   return (
     <div className="max-w-6xl mx-auto px-6 py-12">
       <Suspense fallback={<div className="text-center py-12">Loading verdict...</div>}>
         <VerdictContent locale={locale} slug={product} />
       </Suspense>
+      <RelatedProducts locale={locale} productSlug={product} category={category} />
     </div>
   )
 }
