@@ -24,15 +24,22 @@ export class ErrorBoundary extends React.Component<Props, State> {
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error('Error Boundary caught:', error, errorInfo)
+    console.error('Error message:', error.message)
+    console.error('Error stack:', error.stack)
   }
 
   render() {
     if (this.state.hasError) {
+      const errorMsg = this.state.error?.message || 'Unknown error'
+      const errorStack = this.state.error?.stack || ''
+      console.log('ErrorBoundary rendering with error:', errorMsg)
       return (
         this.props.fallback?.(this.state.error!) || (
-          <div style={{ padding: '20px', color: 'red' }}>
+          <div style={{ padding: '20px', color: 'red', whiteSpace: 'pre-wrap', fontFamily: 'monospace', fontSize: '12px' }}>
             <h2>Something went wrong</h2>
-            <p>{this.state.error?.message}</p>
+            <p><strong>Error:</strong> {errorMsg}</p>
+            <p><strong>Stack:</strong></p>
+            <p>{errorStack}</p>
             <button onClick={() => window.location.reload()}>
               Reload Page
             </button>
