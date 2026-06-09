@@ -89,6 +89,7 @@ export const api = {
 
     // Try API call first
     try {
+      console.log('[API Search] Starting request to:', `${API_URL}/api/v1/search`)
       const controller = new AbortController()
       const timeoutId = setTimeout(() => controller.abort(), 10000) // 10 second timeout
 
@@ -100,6 +101,7 @@ export const api = {
       })
 
       clearTimeout(timeoutId)
+      console.log('[API Search] Response status:', res.status, 'OK:', res.ok)
 
       if (res.ok) {
         const data = await res.json()
