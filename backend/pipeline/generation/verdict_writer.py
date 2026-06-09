@@ -80,6 +80,8 @@ async def write_verdict(
             }
         }
 
+        logger.info(f"Calling Gemini API with model: gemini-3.5-flash, API key present: {bool(api_key)}")
+
         async with httpx.AsyncClient(timeout=30.0) as client:
             response = await client.post(url, json=payload, headers=headers)
 
