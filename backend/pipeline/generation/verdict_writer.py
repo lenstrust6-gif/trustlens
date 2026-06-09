@@ -92,7 +92,9 @@ async def write_verdict(
 
             if response.status_code == 200:
                 data = response.json()
+                logger.info(f"Gemini full response: {data}")
                 verdict = data.get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "").strip()
+                logger.info(f"Extracted verdict: '{verdict}'")
 
                 if verdict:
                     word_count = len(verdict.split())
