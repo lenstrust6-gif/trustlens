@@ -64,7 +64,7 @@ async def write_verdict(
     try:
         # Call Gemini in executor to avoid blocking
         loop = asyncio.get_event_loop()
-        model = genai.GenerativeModel("gemini-1.5-flash")
+        model = genai.GenerativeModel("gemini-pro")
         response = await loop.run_in_executor(
             None,
             lambda: model.generate_content(prompt)
