@@ -103,32 +103,48 @@ export const api = {
 
       if (res.ok) {
         const data = await res.json()
-        // Transform API response to match expected format
-        if (data?.results && Array.isArray(data.results)) {
-          data.results = data.results.map((r: any) => ({
-            product: r.product || {},
-            trustScore: r.trust_score ?? 0,
-            confidenceTier: r.confidence_tier || 'unknown',
-            summary: r.summary || '',
-            pros: r.pros || [],
-            cons: r.cons || [],
-            bestFor: r.best_for || [],
-            avoidIf: r.avoid_if || [],
-            featureScores: r.feature_scores || {},
-            specTags: r.spec_tags || {},
-            reviewHighlights: r.review_highlights || [],
-            sourcePanel: {
-              youtubeCount: r.source_count_yt || 0,
-              amazonCount: r.source_count_amz || 0,
-              authScoreAvg: r.auth_score_avg || 0,
-              excludedCount: r.reviews_excluded || 0,
-              lastRefreshed: new Date().toISOString(),
-            },
-            alternatives: [],
-            locale: r.locale || 'in',
-          }))
+        console.log('[API Search] Raw response:', data)
+
+        // Ensure results is always an array
+        let results = []
+        if (Array.isArray(data?.results)) {
+          results = data.results.map((r: any) => {
+            try {
+              return {
+                product: r?.product || { name: 'Unknown', category: '', slug: '', locale: 'in' },
+                trustScore: typeof r?.trust_score === 'number' ? r.trust_score : 0,
+                confidenceTier: r?.confidence_tier || 'unknown',
+                summary: r?.summary || '',
+                pros: Array.isArray(r?.pros) ? r.pros : [],
+                cons: Array.isArray(r?.cons) ? r.cons : [],
+                bestFor: Array.isArray(r?.best_for) ? r.best_for : [],
+                avoidIf: Array.isArray(r?.avoid_if) ? r.avoid_if : [],
+                featureScores: typeof r?.feature_scores === 'object' ? r.feature_scores : {},
+                specTags: typeof r?.spec_tags === 'object' ? r.spec_tags : {},
+                reviewHighlights: Array.isArray(r?.review_highlights) ? r.review_highlights : [],
+                sourcePanel: {
+                  youtubeCount: r?.source_count_yt || 0,
+                  amazonCount: r?.source_count_amz || 0,
+                  authScoreAvg: r?.auth_score_avg || 0,
+                  excludedCount: r?.reviews_excluded || 0,
+                  lastRefreshed: new Date().toISOString(),
+                },
+                alternatives: [],
+                locale: r?.locale || 'in',
+              }
+            } catch (err) {
+              console.error('[API Search] Error transforming result:', r, err)
+              return null
+            }
+          }).filter((r: any) => r !== null)
         }
-        return data || { total: 0, results: [], filters_applied: {} }
+
+        console.log('[API Search] Transformed results:', results)
+        return {
+          total: results.length,
+          results,
+          filters_applied: data?.filters_applied || {},
+        }
       }
     } catch (error) {
       // Fall through to mock data
