@@ -116,7 +116,7 @@ async def get_cache_stats(session: AsyncSession = Depends(get_db_session)):
         return {"status": "error", "message": str(e)}
 
 
-@router.post("/admin/refresh-all")
+@router.post("/api/v1/admin/refresh-all")
 async def refresh_all_products(session: AsyncSession = Depends(get_db_session)):
     """Trigger pipeline for all products to generate verdicts."""
     try:
