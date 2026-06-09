@@ -90,35 +90,45 @@ export default function SearchContent({ locale }: SearchContentProps) {
 
   // Fetch results with filters
   useEffect(() => {
-    if (!query) {
-      setResults([])
-      return
-    }
-
-    setLoading(true)
-    setError(null)
-
-    api
-      .search(query, locale, filters)
-      .then((data) => {
-        console.log('[SearchContent] API Response:', data)
-        console.log('[SearchContent] Results:', data.results)
-        console.log('[SearchContent] Results Type:', typeof data.results, 'Is Array:', Array.isArray(data.results))
-        setResults(data.results || [])
-        if (!data.results || data.results.length === 0) {
-          setError('No products found matching your criteria')
-        } else {
-          setError(null)
-        }
-      })
-      .catch((err) => {
-        console.error('[SearchContent] Error:', err)
-        setError('Search failed. Try again.')
+    try {
+      console.log('[SearchContent useEffect] Starting with query:', query)
+      if (!query) {
+        console.log('[SearchContent useEffect] No query, clearing results')
         setResults([])
-      })
-      .finally(() => {
-        setLoading(false)
-      })
+        return
+      }
+
+      setLoading(true)
+      setError(null)
+
+      console.log('[SearchContent useEffect] Calling api.search...')
+      api
+        .search(query, locale, filters)
+        .then((data) => {
+          console.log('[SearchContent] API Response:', data)
+          console.log('[SearchContent] Results:', data.results)
+          console.log('[SearchContent] Results Type:', typeof data.results, 'Is Array:', Array.isArray(data.results))
+          setResults(data.results || [])
+          if (!data.results || data.results.length === 0) {
+            setError('No products found matching your criteria')
+          } else {
+            setError(null)
+          }
+        })
+        .catch((err) => {
+          console.error('[SearchContent] Error:', err)
+          setError('Search failed. Try again.')
+          setResults([])
+        })
+        .finally(() => {
+          setLoading(false)
+        })
+    } catch (err) {
+      console.error('[SearchContent useEffect] Error in effect:', err)
+      setError('Search error. Try again.')
+      setResults([])
+      setLoading(false)
+    }
   }, [query, locale, filters])
 
   // Fetch filter stats on mount
