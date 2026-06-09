@@ -9,13 +9,13 @@ logger = logging.getLogger(__name__)
 groq_client = Groq(api_key=settings.groq_api_key)
 
 
-async def groq_chat(prompt: str, model: str = "gemma2-9b-it") -> str:
+async def groq_chat(prompt: str, model: str = "mixtral-8x7b-32768") -> str:
     """
-    Call Groq Gemma via chat completion.
+    Call Groq Mixtral via chat completion.
 
     Args:
         prompt: Full prompt text
-        model: Groq model name (default: Gemma 3 12B)
+        model: Groq model name (default: Mixtral 8x7B)
 
     Returns:
         Raw response string

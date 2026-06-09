@@ -72,8 +72,8 @@ async def write_verdict(
         except Exception as e:
             logger.warning(f"Claude Sonnet failed, falling back to Gemma: {e}")
 
-    # Fallback to Gemma
-    verdict = await groq_chat(prompt, model="gemma2-9b-it")
+    # Fallback to Mixtral
+    verdict = await groq_chat(prompt, model="mixtral-8x7b-32768")
     if verdict:
         word_count = len(verdict.split())
         logger.info(f"Verdict written via Gemma ({word_count} words)")
