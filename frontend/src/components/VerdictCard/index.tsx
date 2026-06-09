@@ -1,5 +1,9 @@
 import { VerdictCard as VerdictCardType } from '@/lib/types'
 import TrustScore from './TrustScore'
+import ConfidenceTierBadge from '@/components/product/ConfidenceTierBadge'
+import FeatureScoresChart from '@/components/product/FeatureScoresChart'
+import ReviewHighlights from '@/components/product/ReviewHighlights'
+import SourceTransparencyPanel from '@/components/product/SourceTransparencyPanel'
 
 const CATEGORY_LABELS: Record<string, string> = {
   'power-banks': '🔋 Power Banks',
@@ -65,9 +69,13 @@ export default function VerdictCard({ card }: { card: VerdictCardType }) {
             marginBottom: '12px',
             letterSpacing: '0.1em',
             textTransform: 'capitalize',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
           }}
         >
-          {categoryDisplay}
+          <span>{categoryDisplay}</span>
+          <ConfidenceTierBadge tier={safeCard.confidenceTier} />
         </div>
         <h1
           style={{
@@ -305,194 +313,90 @@ export default function VerdictCard({ card }: { card: VerdictCardType }) {
         </div>
       </div>
 
-      {/* Feature Scores */}
-      <div style={{ marginBottom: '48px' }}>
-        <h2
-          style={{
-            fontSize: '18px',
-            fontWeight: 600,
-            color: 'var(--text-primary)',
-            marginBottom: '24px',
-            fontFamily: 'var(--font-body)',
-          }}
-        >
-          Feature Scores
-        </h2>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          {Object.entries(safeCard.featureScores).map(([feature, score]) => (
-            <div key={feature}>
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  marginBottom: '8px',
-                }}
-              >
-                <span
+      {/* Spec Sentiment Tags */}
+      {Object.keys(safeCard.specTags).length > 0 && (
+        <div style={{ marginBottom: '48px' }}>
+          <h2
+            style={{
+              fontSize: '18px',
+              fontWeight: 600,
+              color: 'var(--text-primary)',
+              marginBottom: '24px',
+              fontFamily: 'var(--font-body)',
+            }}
+          >
+            Spec Sentiment
+          </h2>
+          <div
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: '12px',
+            }}
+          >
+            {Object.entries(safeCard.specTags).map(([spec, sentiment]) => {
+              let icon = '⚠️'
+              let color = '#f59e0b'
+
+              if (sentiment === 'confirms') {
+                icon = '✅'
+                color = '#10b981'
+              } else if (sentiment === 'disputes') {
+                icon = '❌'
+                color = '#ef4444'
+              }
+
+              return (
+                <div
+                  key={spec}
                   style={{
-                    fontSize: '14px',
-                    color: 'var(--text-primary)',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    padding: '8px 12px',
+                    background: `${color}15`,
+                    border: `1px solid ${color}40`,
+                    borderRadius: '6px',
+                    fontSize: '13px',
+                    color: color,
                     fontWeight: 500,
                   }}
                 >
-                  {FEATURE_LABELS[feature] || feature}
-                </span>
-                <span
-                  style={{
-                    fontSize: '14px',
-                    fontFamily: 'var(--font-mono)',
-                    color: 'var(--text-primary)',
-                    fontWeight: 600,
-                  }}
-                >
-                  {score.toFixed(1)}/10
-                </span>
-              </div>
-              <div
-                style={{
-                  width: '100%',
-                  height: '6px',
-                  background: 'rgba(255,255,255,0.10)',
-                  borderRadius: '3px',
-                  overflow: 'hidden',
-                  position: 'relative',
-                }}
-              >
-                <div
-                  style={{
-                    height: '100%',
-                    width: `${(score / 10) * 100}%`,
-                    background: getBarColor(score),
-                    borderRadius: '3px',
-                    transition: 'width 0.3s ease',
-                  }}
-                />
-              </div>
-            </div>
-          ))}
+                  <span>{icon}</span>
+                  <span>{spec.replace(/_/g, ' ').split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}</span>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Feature Scores + Review Highlights */}
+      <div
+        style={{
+          marginBottom: '48px',
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          gap: '40px',
+          alignItems: 'start',
+        }}
+      >
+        <div>
+          <FeatureScoresChart features={safeCard.featureScores} />
+        </div>
+        <div>
+          <ReviewHighlights highlights={safeCard.reviewHighlights} />
         </div>
       </div>
 
-      {/* Source Panel */}
-      <div
-        style={{
-          padding: '24px 28px',
-          background: 'rgba(255,255,255,0.04)',
-          border: '1px solid var(--border)',
-          borderRadius: '8px',
-        }}
-      >
-        <h3
-          style={{
-            fontSize: '13px',
-            fontWeight: 600,
-            color: 'var(--text-primary)',
-            marginBottom: '24px',
-            textTransform: 'uppercase',
-            letterSpacing: '0.1em',
-          }}
-        >
-          Data Summary
-        </h3>
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(2, 1fr)',
-            gap: '24px',
-            maxWidth: '400px',
-          }}
-        >
-          <div style={{ textAlign: 'center' }}>
-            <div
-              style={{
-                fontSize: '22px',
-                fontFamily: 'var(--font-mono)',
-                fontWeight: 600,
-                color: 'var(--text-primary)',
-                marginBottom: '4px',
-              }}
-            >
-              {safeCard.sourcePanel.youtubeCount}
-            </div>
-            <div
-              style={{
-                fontSize: '11px',
-                color: 'var(--text-muted)',
-                textTransform: 'capitalize',
-              }}
-            >
-              YouTube Comments
-            </div>
-          </div>
-          <div style={{ textAlign: 'center' }}>
-            <div
-              style={{
-                fontSize: '22px',
-                fontFamily: 'var(--font-mono)',
-                fontWeight: 600,
-                color: 'var(--text-primary)',
-                marginBottom: '4px',
-              }}
-            >
-              {safeCard.sourcePanel.amazonCount}
-            </div>
-            <div
-              style={{
-                fontSize: '11px',
-                color: 'var(--text-muted)',
-                textTransform: 'capitalize',
-              }}
-            >
-              Amazon Reviews
-            </div>
-          </div>
-          <div style={{ textAlign: 'center' }}>
-            <div
-              style={{
-                fontSize: '22px',
-                fontFamily: 'var(--font-mono)',
-                fontWeight: 600,
-                color: 'var(--text-primary)',
-                marginBottom: '4px',
-              }}
-            >
-              {safeCard.sourcePanel.authScoreAvg.toFixed(0)}
-            </div>
-            <div
-              style={{
-                fontSize: '11px',
-                color: 'var(--text-muted)',
-                textTransform: 'capitalize',
-              }}
-            >
-              Avg Auth Score
-            </div>
-          </div>
-          <div style={{ textAlign: 'center' }}>
-            <div
-              style={{
-                fontSize: '22px',
-                fontFamily: 'var(--font-mono)',
-                fontWeight: 600,
-                color: 'var(--text-primary)',
-                marginBottom: '4px',
-              }}
-            >
-              {safeCard.sourcePanel.excludedCount}
-            </div>
-            <div
-              style={{
-                fontSize: '11px',
-                color: 'var(--text-muted)',
-                textTransform: 'capitalize',
-              }}
-            >
-              Excluded
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* Source Transparency Panel */}
+      <SourceTransparencyPanel
+        youtubeCount={safeCard.sourcePanel.youtubeCount}
+        amazonCount={safeCard.sourcePanel.amazonCount}
+        authScoreAvg={safeCard.sourcePanel.authScoreAvg}
+        excludedCount={safeCard.sourcePanel.excludedCount}
+        lastRefreshed={safeCard.sourcePanel.lastRefreshed}
+      />
     </div>
   )
 }
