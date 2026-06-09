@@ -79,7 +79,7 @@ async def write_verdict(
             }],
             "generationConfig": {
                 "temperature": 0.7,
-                "maxOutputTokens": 2000,
+                "maxOutputTokens": 4000,
             }
         }
 
