@@ -48,17 +48,24 @@ class YouTubeFetcher:
         return comments
 
     async def _search_videos(self, product_name: str, locale: str, lang: str = None) -> list[tuple[str, str]]:
-        """Search for videos in specified language and return (video_id, title) tuples."""
+        """Search for videos in specified language with enhanced parameters."""
         if not lang:
             lang = "hi" if locale == "in" else "en"
 
+        # Build search query with review keywords
+        search_query = f"{product_name} review"
+        if lang == "hi":
+            search_query = f"{product_name} review test unboxing"
+
         params = {
-            "q": product_name,
+            "q": search_query,
             "type": "video",
-            "maxResults": 5,
+            "maxResults": 10,  # Increased from 5 to 10 for better coverage
             "relevanceLanguage": lang,
+            "regionCode": "IN" if locale == "in" else "US",  # Focus on region
             "key": settings.youtube_api_key,
-            "order": "relevance",
+            "order": "viewCount",  # Popular reviews first
+            "safeSearch": "strict",  # Filter inappropriate content
         }
 
         try:
@@ -92,11 +99,12 @@ class YouTubeFetcher:
             return []
 
     async def _fetch_video_comments(self, video_id: str, video_title: str) -> list[dict]:
-        """Fetch comments for a specific video."""
+        """Fetch top comments for a specific video."""
         params = {
             "videoId": video_id,
             "maxResults": 100,
             "textFormat": "plainText",
+            "order": "relevance",  # Fetch most relevant (highest rated) comments
             "key": settings.youtube_api_key,
         }
 
