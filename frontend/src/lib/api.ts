@@ -90,7 +90,7 @@ export const api = {
     // Try API call first
     try {
       const controller = new AbortController()
-      const timeoutId = setTimeout(() => controller.abort(), 2000)
+      const timeoutId = setTimeout(() => controller.abort(), 10000) // 10 second timeout
 
       const res = await fetch(`${API_URL}/api/v1/search`, {
         method: 'POST',
