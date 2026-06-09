@@ -147,6 +147,14 @@ export default function SearchContent({ locale }: SearchContentProps) {
         }}
       >
         {/* Main Content */}
+        <ErrorBoundary
+          fallback={(error) => (
+            <div style={{ padding: '20px', color: '#ff6b6b', background: 'rgba(255,107,107,0.1)', borderRadius: '8px' }}>
+              <h3>Error rendering search page: {error?.message}</h3>
+              <button onClick={() => window.location.reload()} style={{ padding: '8px 16px', background: '#ff6b6b', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', marginTop: '10px' }}>Reload</button>
+            </div>
+          )}
+        >
         <div style={{ width: '100%' }}>
           {/* Search Bar with Filter Button */}
           <div style={{ marginBottom: '32px', display: 'flex', gap: '12px' }}>
@@ -258,6 +266,7 @@ export default function SearchContent({ locale }: SearchContentProps) {
             <SearchResults results={results} loading={loading} error={error} />
           </ErrorBoundary>
         </div>
+        </ErrorBoundary>
       </div>
     </div>
   )

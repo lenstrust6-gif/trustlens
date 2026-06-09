@@ -87,25 +87,21 @@ export const api = {
       confidence_tiers: filters?.confidence_tiers ?? [],
     }
 
-    // DEBUG: Force mock data to test if real API is causing .map() error
-    const FORCE_MOCK = true
+    // Try API call first
+    try {
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 2000)
 
-    if (!FORCE_MOCK) {
-      // Try API call first
-      try {
-        const controller = new AbortController()
-        const timeoutId = setTimeout(() => controller.abort(), 2000)
+      const res = await fetch(`${API_URL}/api/v1/search`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(searchBody),
+        signal: controller.signal,
+      })
 
-        const res = await fetch(`${API_URL}/api/v1/search`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(searchBody),
-          signal: controller.signal,
-        })
+      clearTimeout(timeoutId)
 
-        clearTimeout(timeoutId)
-
-        if (res.ok) {
+      if (res.ok) {
         const data = await res.json()
         console.log('[API Search] Raw response:', data)
 
@@ -153,7 +149,6 @@ export const api = {
       } catch (error) {
         // Fall through to mock data
       }
-    }
 
     // Fallback: filter mock data locally
     let filtered = Object.values(MOCK_VERDICTS)
