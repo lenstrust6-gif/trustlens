@@ -126,6 +126,7 @@ class YouTubeFetcher:
     async def _fetch_video_comments(self, video_id: str, video_title: str) -> list[dict]:
         """Fetch top comments for a specific video."""
         params = {
+            "part": "snippet",  # CRITICAL: without this, API returns no comment text!
             "videoId": video_id,
             "maxResults": 100,
             "textFormat": "plainText",
