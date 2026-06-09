@@ -80,7 +80,7 @@ class SearchService:
             for product in products:
                 verdict_stmt = select(VerdictModel).where(
                     VerdictModel.product_id == product.id
-                )
+                ).order_by(VerdictModel.created_at.desc()).limit(1)
                 verdict_result = await session.execute(verdict_stmt)
                 verdict = verdict_result.scalar()
 
