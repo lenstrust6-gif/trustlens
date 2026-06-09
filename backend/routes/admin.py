@@ -5,7 +5,7 @@ from backend.db.connection import get_db_session
 from backend.db import repositories as repos
 from backend.db.models import ProductModel
 from backend.cache import redis_client, get_hit_rate
-from backend.pipeline.orchestrator import PipelineOrchestrator
+from backend.pipeline.orchestrator import run_pipeline
 import logging
 
 logger = logging.getLogger(__name__)
@@ -130,8 +130,7 @@ async def refresh_all_products(session: AsyncSession = Depends(get_db_session)):
 
         for product in products:
             try:
-                orchestrator = PipelineOrchestrator(session)
-                await orchestrator.run_pipeline(product.name, product.locale)
+                await run_pipeline(product.name, product.locale, session)
                 refreshed += 1
                 logger.info(f"✅ Refreshed: {product.name}")
             except Exception as e:
