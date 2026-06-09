@@ -145,12 +145,17 @@ class YouTubeFetcher:
                 items = data.get("items", [])
 
                 comments = []
-                for item in items:
+                for i, item in enumerate(items):
                     snippet = item.get("snippet", {})
                     top_level = snippet.get("topLevelComment", {}).get("snippet", {})
+                    text = top_level.get("textDisplay", "")
+
+                    # Debug first item
+                    if i == 0:
+                        logger.info(f"[YouTube] Sample response structure: snippet keys={list(snippet.keys())}, topLevel keys={list(top_level.keys())}, textDisplay='{text[:50] if text else '(empty)'}'")
 
                     comment = {
-                        "text": top_level.get("textDisplay", ""),
+                        "text": text,
                         "video_id": video_id,
                         "video_title": video_title,
                         "author": top_level.get("authorDisplayName", ""),
@@ -158,7 +163,8 @@ class YouTubeFetcher:
                         "published_at": top_level.get("publishedAt", ""),
                         "source": "youtube",
                     }
-                    comments.append(comment)
+                    if text.strip():  # Only append if text is not empty
+                        comments.append(comment)
 
                 logger.info(f"YouTube: fetched {len(comments)} comments from video {video_id}")
                 return comments
