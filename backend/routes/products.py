@@ -148,3 +148,74 @@ async def create_product(
         logger.error(f"Error creating product: {e}")
         await session.rollback()
         raise HTTPException(status_code=500, detail=f"Error creating product: {str(e)}")
+
+
+@router.get("/api/v1/products/{locale}/{slug}/related")
+async def get_related_products(locale: str, slug: str, session: AsyncSession = Depends(get_db_session)):
+    """Get similar and alternative products in the same category."""
+    try:
+        # Get the main product
+        product = await repos.products.get_by_slug(session, slug, locale)
+        if not product:
+            raise HTTPException(status_code=404, detail="Product not found")
+
+        verdict = await repos.verdicts.get_by_product_id(session, product.id)
+        if not verdict:
+            raise HTTPException(status_code=404, detail="Verdict not found")
+
+        # Get all products in same category
+        from sqlalchemy import select
+        stmt = select(ProductModel).where(
+            ProductModel.category == product.category,
+            ProductModel.locale == locale,
+            ProductModel.id != product.id
+        )
+        result = await session.execute(stmt)
+        category_products = result.scalars().all()
+
+        # Enrich with verdicts
+        similar = []
+        better_alternatives = []
+
+        for p in category_products:
+            v = await repos.verdicts.get_by_product_id(session, p.id)
+            if not v or not v.trust_score:
+                continue
+
+            item = {
+                "id": str(p.id),
+                "name": p.name,
+                "slug": p.slug,
+                "trust_score": float(v.trust_score),
+                "summary": v.summary or "No verdict available",
+                "confidence_tier": v.confidence_tier,
+                "source_count_yt": v.source_count_yt,
+            }
+
+            # Similar: within ±1.5 trust score
+            if abs(float(v.trust_score) - float(verdict.trust_score)) <= 1.5:
+                similar.append(item)
+            # Better alternatives: higher trust score
+            elif float(v.trust_score) > float(verdict.trust_score):
+                better_alternatives.append(item)
+
+        # Sort by trust score descending
+        similar.sort(key=lambda x: x["trust_score"], reverse=True)
+        better_alternatives.sort(key=lambda x: x["trust_score"], reverse=True)
+
+        return {
+            "status": "ok",
+            "current_product": {
+                "name": product.name,
+                "trust_score": float(verdict.trust_score),
+                "category": product.category,
+            },
+            "similar_products": similar[:3],  # Top 3
+            "better_alternatives": better_alternatives[:3],  # Top 3
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching related products: {e}")
+        raise HTTPException(status_code=500, detail=f"Error fetching related products: {str(e)}")
