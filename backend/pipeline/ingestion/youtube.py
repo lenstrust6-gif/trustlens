@@ -13,38 +13,38 @@ class YouTubeFetcher:
 
     async def fetch_comments(self, product_name: str, locale: str) -> list[dict]:
         """
-        Fetch YouTube comments for a product (multi-language support).
-        For India: fetches both Hindi and English comments.
+        Fetch YouTube comments for a product (optimized for quota).
+        For India: tries English first, then Hindi only if needed.
         Returns list of comments with text, video_id, video_title, author, like_count, published_at.
         """
         if not settings.youtube_api_key:
             logger.warning("YouTube API key not configured")
             return []
 
-        # Step 1: Search for videos in all relevant languages
-        languages = ["hi", "en"] if locale == "in" else ["en"]
-        video_ids = []
-        for lang in languages:
-            lang_videos = await self._search_videos(product_name, locale, lang)
-            video_ids.extend(lang_videos)
-            if len(video_ids) >= 10:  # Cap at 10 videos total
-                video_ids = video_ids[:10]
-                break
+        # Step 1: Search for videos (try English first to save quota on Hindi searches)
+        video_ids = await self._search_videos(product_name, locale, "en")
+
+        # Only search Hindi if English returned < 2 videos (India locale only)
+        if locale == "in" and len(video_ids) < 2:
+            hindi_videos = await self._search_videos(product_name, locale, "hi")
+            video_ids.extend(hindi_videos)
+            logger.info(f"YouTube: supplemented with Hindi videos, total: {len(video_ids)}")
 
         if not video_ids:
             logger.info(f"YouTube: no videos found for '{product_name}'")
             return []
 
-        # Step 2: Fetch comments from each video
+        # Step 2: Fetch comments from first 3-5 videos only (quota optimization)
+        max_videos = 3
         comments = []
-        for video_id, video_title in video_ids:
+        for video_id, video_title in video_ids[:max_videos]:
             video_comments = await self._fetch_video_comments(video_id, video_title)
             comments.extend(video_comments)
             if len(comments) >= settings.youtube_fetch_limit:
                 comments = comments[: settings.youtube_fetch_limit]
                 break
 
-        logger.info(f"YouTube: fetched {len(comments)} comments from {len(video_ids)} videos")
+        logger.info(f"YouTube: fetched {len(comments)} comments from {len(video_ids[:max_videos])} videos")
         return comments
 
     async def _search_videos(self, product_name: str, locale: str, lang: str = None) -> list[tuple[str, str]]:
@@ -60,7 +60,7 @@ class YouTubeFetcher:
         params = {
             "q": search_query,
             "type": "video",
-            "maxResults": 10,  # Increased from 5 to 10 for better coverage
+            "maxResults": 5,  # Optimized: fetch only 5 videos (top results are usually best)
             "relevanceLanguage": lang,
             "regionCode": "IN" if locale == "in" else "US",  # Focus on region
             "key": settings.youtube_api_key,
