@@ -63,8 +63,8 @@ async def write_verdict(
     )
 
     try:
-        # Use v1 endpoint with AI Studio key directly
-        url = f"https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent"
+        # Use v1 endpoint with AI Studio key directly (gemini-2.0-flash-exp for efficiency)
+        url = f"https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash-exp:generateContent"
 
         headers = {
             "Content-Type": "application/json",
@@ -79,7 +79,7 @@ async def write_verdict(
             }],
             "generationConfig": {
                 "temperature": 0.7,
-                "maxOutputTokens": 4000,
+                "maxOutputTokens": 1000,
             }
         }
 
