@@ -1,8 +1,12 @@
 import logging
-import httpx
+import asyncio
+import google.generativeai as genai
 from backend.config import settings
 
 logger = logging.getLogger(__name__)
+
+if settings.google_api_key:
+    genai.configure(api_key=settings.google_api_key)
 
 VERDICT_PROMPT_TEMPLATE = """You are writing a product verdict summary for TrustLens, an AI-powered
 product review intelligence portal for Indian consumers.
@@ -38,7 +42,8 @@ async def write_verdict(
     review_count: int,
 ) -> str:
     """
-    Write a 80-120 word verdict using Google Gemini API (REST).
+    Write a 80-120 word verdict using Google Gemini API (via google-generativeai SDK).
+    Works with API Studio keys.
     """
     if not settings.google_api_key:
         logger.error("Google API key not configured")
@@ -57,23 +62,19 @@ async def write_verdict(
     )
 
     try:
-        url = f"https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key={settings.google_api_key}"
-        payload = {
-            "contents": [{
-                "parts": [{"text": prompt}]
-            }]
-        }
+        loop = asyncio.get_event_loop()
+        model = genai.GenerativeModel("gemini-pro")
 
-        async with httpx.AsyncClient(timeout=30.0) as client:
-            response = await client.post(url, json=payload)
-            response.raise_for_status()
-            data = response.json()
+        response = await loop.run_in_executor(
+            None,
+            lambda: model.generate_content(prompt)
+        )
 
-            verdict = data.get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "").strip()
-            if verdict:
-                word_count = len(verdict.split())
-                logger.info(f"Verdict written via Gemini ({word_count} words)")
-                return verdict
+        verdict = response.text.strip() if response.text else ""
+        if verdict:
+            word_count = len(verdict.split())
+            logger.info(f"Verdict written via Gemini ({word_count} words)")
+            return verdict
     except Exception as e:
         logger.error(f"Gemini API error: {e}")
 
