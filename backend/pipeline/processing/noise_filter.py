@@ -16,11 +16,11 @@ async def filter_noise(reviews: list[dict]) -> list[dict]:
     if not reviews:
         return []
 
-    # Pre-filter: remove very short reviews (minimum 3 chars to catch real feedback)
-    pre_filtered = [r for r in reviews if len(r.get("text", "")) >= 3]
+    # Pre-filter: remove only truly empty reviews (0 chars)
+    pre_filtered = [r for r in reviews if len(r.get("text", "")) > 0]
 
     if not pre_filtered:
-        logger.info("All reviews filtered out (too short)")
+        logger.info("All reviews filtered out (empty)")
         return []
 
     if len(pre_filtered) <= 50:
