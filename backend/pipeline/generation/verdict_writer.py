@@ -1,7 +1,7 @@
 import logging
 import asyncio
+import httpx
 import os
-from google import genai
 from backend.config import settings
 
 logger = logging.getLogger(__name__)
@@ -40,8 +40,7 @@ async def write_verdict(
     review_count: int,
 ) -> str:
     """
-    Write a 80-120 word verdict using Gemini (modern google-genai SDK).
-    Works with AI Studio API keys.
+    Write a 80-120 word verdict using Gemini REST API directly.
     """
     api_key = settings.google_api_key or os.getenv("GEMINI_API_KEY")
     if not api_key:
@@ -61,27 +60,43 @@ async def write_verdict(
     )
 
     try:
-        loop = asyncio.get_event_loop()
+        # Use v1 endpoint with AI Studio key directly
+        url = f"https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent"
 
-        def call_gemini():
-            client = genai.Client(api_key=api_key)
-            response = client.models.generate_content(
-                model="gemini-2.5-flash",
-                contents=prompt,
-                config={
-                    "temperature": 0.7,
-                    "max_output_tokens": 200,
-                }
-            )
-            return response.text.strip() if response.text else ""
+        headers = {
+            "Content-Type": "application/json",
+            "x-goog-api-key": api_key,
+        }
 
-        verdict = await loop.run_in_executor(None, call_gemini)
+        payload = {
+            "contents": [{
+                "parts": [{
+                    "text": prompt
+                }]
+            }],
+            "generationConfig": {
+                "temperature": 0.7,
+                "maxOutputTokens": 200,
+            }
+        }
 
-        if verdict:
-            word_count = len(verdict.split())
-            logger.info(f"Verdict written via Gemini ({word_count} words)")
-            return verdict
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            response = await client.post(url, json=payload, headers=headers)
+
+            logger.info(f"Gemini API response status: {response.status_code}")
+
+            if response.status_code == 200:
+                data = response.json()
+                verdict = data.get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "").strip()
+
+                if verdict:
+                    word_count = len(verdict.split())
+                    logger.info(f"Verdict written via Gemini ({word_count} words)")
+                    return verdict
+            else:
+                logger.error(f"Gemini API error status {response.status_code}: {response.text}")
+
     except Exception as e:
-        logger.error(f"Gemini API error: {e}")
+        logger.error(f"Gemini API exception: {e}")
 
     return f"TrustLens verdict pending for {product_name}. Check back soon."
