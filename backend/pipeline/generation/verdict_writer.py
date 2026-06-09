@@ -1,7 +1,6 @@
 import logging
 from backend.config import settings
 from anthropic import Anthropic
-from backend.pipeline.processing.groq_client import groq_chat
 
 logger = logging.getLogger(__name__)
 
@@ -57,8 +56,8 @@ async def write_verdict(
         cons_formatted=cons_formatted,
     )
 
-    # Try Claude Sonnet first (if not gemma mode)
-    if settings.summary_model != "gemma" and anthropic_client:
+    # Use Claude Sonnet (Groq models keep getting deprecated, so we removed the fallback)
+    if anthropic_client:
         try:
             response = anthropic_client.messages.create(
                 model="claude-sonnet-4-6",
@@ -70,14 +69,7 @@ async def write_verdict(
             logger.info(f"Verdict written via Claude Sonnet ({word_count} words)")
             return verdict
         except Exception as e:
-            logger.warning(f"Claude Sonnet failed, falling back to Gemma: {e}")
+            logger.error(f"Claude Sonnet failed: {e}")
 
-    # Fallback to Mixtral
-    verdict = await groq_chat(prompt, model="mixtral-8x7b-32768")
-    if verdict:
-        word_count = len(verdict.split())
-        logger.info(f"Verdict written via Gemma ({word_count} words)")
-        return verdict
-
-    logger.error("Both Claude and Gemma failed to write verdict")
+    logger.error("Claude Sonnet API not configured")
     return f"TrustLens verdict pending for {product_name}. Check back soon."
