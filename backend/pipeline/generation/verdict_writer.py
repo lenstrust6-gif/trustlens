@@ -6,29 +6,32 @@ from backend.config import settings
 
 logger = logging.getLogger(__name__)
 
-VERDICT_PROMPT_TEMPLATE = """You are writing a product verdict summary for TrustLens, an AI-powered
-product review intelligence portal for Indian consumers.
+VERDICT_PROMPT_TEMPLATE = """You are writing a product verdict summary for TrustLens, an AI-powered product review intelligence portal for Indian consumers.
 
-Product: {product_name}
-Category: {category}
-TrustScore: {trust_score}/10
-Reviews analysed: {review_count}
+**Product:** {product_name}
+**Category:** {category}
+**TrustScore:** {trust_score}/10
+**Reviews Analysed:** {review_count}
 
-Top themes from real users:
+**Top Themes from Real Users:**
 PROS: {pros_formatted}
 CONS: {cons_formatted}
 
-Write a balanced, honest verdict of exactly 80–120 words.
-Rules:
-- Lead with what the product is genuinely good for
-- Acknowledge the main weakness honestly
-- State who should buy it and who should avoid it
-- Do NOT mention TrustLens, review counts, or methodology
-- Do NOT use superlatives like "best ever" or "worst ever"
-- Write in plain English, not marketing language
-- Do NOT call any review fake or inauthentic
-- Output only the paragraph – no heading, no preamble
-"""
+---
+
+WRITE A FULL VERDICT OF EXACTLY 80–120 WORDS. This is critical.
+
+RULES:
+1. Start by stating what the product is genuinely good for
+2. Then acknowledge its main weakness
+3. State clearly who should buy it and who should avoid it
+4. DO NOT mention TrustLens, review counts, or methodology
+5. DO NOT use superlatives like "best ever"
+6. Write conversational, plain English for Indian consumers
+7. DO NOT call any review "fake" or "inauthentic"
+8. OUTPUT ONLY THE PARAGRAPH – NO HEADING, NO PREAMBLE, NO MARKDOWN
+
+IMPORTANT: Write the full 80-120 word verdict now."""
 
 
 async def write_verdict(
@@ -76,7 +79,7 @@ async def write_verdict(
             }],
             "generationConfig": {
                 "temperature": 0.7,
-                "maxOutputTokens": 200,
+                "maxOutputTokens": 500,
             }
         }
 
