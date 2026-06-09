@@ -1,6 +1,7 @@
 import logging
 import asyncio
-from anthropic import Anthropic
+import os
+from google import genai
 from backend.config import settings
 
 logger = logging.getLogger(__name__)
@@ -39,10 +40,12 @@ async def write_verdict(
     review_count: int,
 ) -> str:
     """
-    Write a 80-120 word verdict using Claude (Anthropic API).
+    Write a 80-120 word verdict using Gemini (modern google-genai SDK).
+    Works with AI Studio API keys.
     """
-    if not settings.anthropic_api_key:
-        logger.error("Anthropic API key not configured")
+    api_key = settings.google_api_key or os.getenv("GEMINI_API_KEY")
+    if not api_key:
+        logger.error("Gemini API key not configured")
         return f"TrustLens verdict pending for {product_name}. Check back soon."
 
     pros_formatted = ", ".join([f"{p['text']} ({p['mentions']} mentions)" for p in pros[:3]])
@@ -59,23 +62,26 @@ async def write_verdict(
 
     try:
         loop = asyncio.get_event_loop()
-        client = Anthropic(api_key=settings.anthropic_api_key)
 
-        response = await loop.run_in_executor(
-            None,
-            lambda: client.messages.create(
-                model="claude-3-5-sonnet-20241022",
-                max_tokens=200,
-                messages=[{"role": "user", "content": prompt}]
+        def call_gemini():
+            client = genai.Client(api_key=api_key)
+            response = client.models.generate_content(
+                model="gemini-2.5-flash",
+                contents=prompt,
+                config={
+                    "temperature": 0.7,
+                    "max_output_tokens": 200,
+                }
             )
-        )
+            return response.text.strip() if response.text else ""
 
-        verdict = response.content[0].text.strip() if response.content else ""
+        verdict = await loop.run_in_executor(None, call_gemini)
+
         if verdict:
             word_count = len(verdict.split())
-            logger.info(f"Verdict written via Claude ({word_count} words)")
+            logger.info(f"Verdict written via Gemini ({word_count} words)")
             return verdict
     except Exception as e:
-        logger.error(f"Claude API error: {e}")
+        logger.error(f"Gemini API error: {e}")
 
     return f"TrustLens verdict pending for {product_name}. Check back soon."
