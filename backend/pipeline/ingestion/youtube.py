@@ -148,11 +148,15 @@ class YouTubeFetcher:
                 for i, item in enumerate(items):
                     snippet = item.get("snippet", {})
                     top_level = snippet.get("topLevelComment", {}).get("snippet", {})
-                    text = top_level.get("textDisplay", "")
 
-                    # Debug first item
+                    # Try multiple field names for comment text
+                    text = top_level.get("textDisplay") or top_level.get("textOriginal") or ""
+
+                    # Debug first item with full JSON
                     if i == 0:
-                        logger.info(f"[YouTube] Sample response structure: snippet keys={list(snippet.keys())}, topLevel keys={list(top_level.keys())}, textDisplay='{text[:50] if text else '(empty)'}'")
+                        logger.info(f"[YouTube] First item full JSON: {str(item)[:500]}")
+                        logger.info(f"[YouTube] topLevel snippet keys: {list(top_level.keys())}")
+                        logger.info(f"[YouTube] textDisplay='{top_level.get('textDisplay')[:50] if top_level.get('textDisplay') else '(None)'}', textOriginal='{top_level.get('textOriginal')[:50] if top_level.get('textOriginal') else '(None)'}'")
 
                     comment = {
                         "text": text,
@@ -163,8 +167,8 @@ class YouTubeFetcher:
                         "published_at": top_level.get("publishedAt", ""),
                         "source": "youtube",
                     }
-                    if text.strip():  # Only append if text is not empty
-                        comments.append(comment)
+                    # Add all comments, even short ones
+                    comments.append(comment)
 
                 logger.info(f"YouTube: fetched {len(comments)} comments from video {video_id}")
                 return comments
