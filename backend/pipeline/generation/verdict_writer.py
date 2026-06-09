@@ -1,10 +1,7 @@
 import logging
-from backend.config import settings
-from anthropic import Anthropic
+from backend.pipeline.processing.groq_client import groq_chat
 
 logger = logging.getLogger(__name__)
-
-anthropic_client = Anthropic(api_key=settings.anthropic_api_key) if settings.anthropic_api_key else None
 
 VERDICT_PROMPT_TEMPLATE = """You are writing a product verdict summary for TrustLens, an AI-powered
 product review intelligence portal for Indian consumers.
@@ -40,9 +37,7 @@ async def write_verdict(
     review_count: int,
 ) -> str:
     """
-    Write a 80-120 word verdict using Claude Sonnet.
-
-    Fallback to Groq Gemma if Claude fails or if SUMMARY_MODEL=gemma.
+    Write a 80-120 word verdict using Groq Gemma.
     """
     pros_formatted = ", ".join([f"{p['text']} ({p['mentions']} mentions)" for p in pros[:3]])
     cons_formatted = ", ".join([f"{c['text']} ({c['mentions']} mentions)" for c in cons[:3]])
@@ -56,20 +51,12 @@ async def write_verdict(
         cons_formatted=cons_formatted,
     )
 
-    # Use Claude Sonnet (Groq models keep getting deprecated, so we removed the fallback)
-    if anthropic_client:
-        try:
-            response = anthropic_client.messages.create(
-                model="claude-sonnet-4-6",
-                max_tokens=256,
-                messages=[{"role": "user", "content": prompt}],
-            )
-            verdict = response.content[0].text
-            word_count = len(verdict.split())
-            logger.info(f"Verdict written via Claude Sonnet ({word_count} words)")
-            return verdict
-        except Exception as e:
-            logger.error(f"Claude Sonnet failed: {e}")
+    # Use Groq Gemma 7B
+    verdict = await groq_chat(prompt, model="gemma-7b-it")
+    if verdict:
+        word_count = len(verdict.split())
+        logger.info(f"Verdict written via Gemma ({word_count} words)")
+        return verdict
 
-    logger.error("Claude Sonnet API not configured")
+    logger.error("Groq Gemma failed to write verdict")
     return f"TrustLens verdict pending for {product_name}. Check back soon."
