@@ -16,8 +16,8 @@ async def filter_noise(reviews: list[dict]) -> list[dict]:
     if not reviews:
         return []
 
-    # Pre-filter: remove very short reviews
-    pre_filtered = [r for r in reviews if len(r.get("text", "")) >= 10]
+    # Pre-filter: remove very short reviews (minimum 3 chars to catch real feedback)
+    pre_filtered = [r for r in reviews if len(r.get("text", "")) >= 3]
 
     if not pre_filtered:
         logger.info("All reviews filtered out (too short)")
@@ -58,6 +58,10 @@ Reviews (0-indexed):
 
     try:
         response = await groq_chat(prompt)
+        if not response:
+            logger.warning("Groq returned empty response, keeping all reviews")
+            return reviews
+
         data = json.loads(response)
         exclude_indices = set(data.get("exclude_indices", []))
 
@@ -65,8 +69,8 @@ Reviews (0-indexed):
         logger.info(f"Filtered batch: {len(reviews)} → {len(filtered)}")
         return filtered
     except json.JSONDecodeError as e:
-        logger.error(f"Failed to parse noise filter response: {e}")
+        logger.warning(f"Failed to parse noise filter response: {e}, keeping all reviews")
         return reviews
     except Exception as e:
-        logger.error(f"Noise filtering failed: {e}")
+        logger.warning(f"Noise filtering failed: {e}, keeping all reviews as fallback")
         return reviews
