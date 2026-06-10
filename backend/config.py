@@ -7,8 +7,8 @@ class Settings(BaseSettings):
     environment: str = "development"
     allowed_origins: str = "http://localhost:3000,http://localhost:8000"
 
-    # Database
-    database_url: str = "postgresql+asyncpg://neondb_owner:password@localhost:5432/neondb"
+    # Database (MUST be set via environment variable in production)
+    database_url: str = ""
 
     # Cache
     redis_url: str = "redis://localhost:6379"

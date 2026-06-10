@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
+from pydantic import Field
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from backend.db.connection import get_db_session
@@ -31,57 +32,92 @@ async def get_stats(session: AsyncSession = Depends(get_db_session)):
             "emails_captured": len(emails),
         }
     except Exception as e:
-        logger.error(f"Stats failed: {e}")
+        logger.error(f"Stats failed: {e}", exc_info=True)
         return {"status": "error", "message": str(e)}
 
 
 @router.get("/admin/products")
-async def get_products(session: AsyncSession = Depends(get_db_session)):
-    """Full product index with verdicts."""
+async def get_products(
+    session: AsyncSession = Depends(get_db_session),
+    limit: int = Query(default=20, ge=1, le=100),
+    offset: int = Query(default=0, ge=0),
+):
+    """Full product index with verdicts (paginated)."""
     try:
         products = await repos.products.get_all(session)
+        verdicts_map = {v.product_id: v for v in await repos.verdicts.get_all_with_products(session)}
+
         result = []
+        for product in products[offset : offset + limit]:
+            verdict = verdicts_map.get(product.id)
+            result.append({
+                "id": str(product.id),
+                "name": product.name,
+                "slug": product.slug,
+                "category": product.category,
+                "locale": product.locale,
+                "trust_score": float(verdict.trust_score) if verdict else 0.0,
+                "confidence_tier": verdict.confidence_tier if verdict else "early",
+                "created_at": product.created_at.isoformat() if product.created_at else None,
+            })
 
-        for product in products:
-            verdict = await repos.verdicts.get_by_product_id(session, product.id)
-            result.append(
-                {
-                    "id": str(product.id),
-                    "name": product.name,
-                    "slug": product.slug,
-                    "category": product.category,
-                    "locale": product.locale,
-                    "trust_score": float(verdict.trust_score) if verdict else 0.0,
-                    "confidence_tier": verdict.confidence_tier if verdict else "early",
-                    "created_at": product.created_at.isoformat() if product.created_at else None,
-                }
-            )
-
-        return {"status": "ok", "products": result}
+        return {
+            "status": "ok",
+            "total": len(products),
+            "limit": limit,
+            "offset": offset,
+            "products": result,
+        }
     except Exception as e:
-        logger.error(f"Products failed: {e}")
+        logger.error(f"Products failed: {e}", exc_info=True)
         return {"status": "error", "message": str(e)}
 
 
 @router.get("/admin/misses")
-async def get_search_misses(session: AsyncSession = Depends(get_db_session)):
-    """Search miss editorial queue."""
+async def get_search_misses(
+    session: AsyncSession = Depends(get_db_session),
+    limit: int = Query(default=20, ge=1, le=100),
+    offset: int = Query(default=0, ge=0),
+):
+    """Search miss editorial queue (paginated)."""
     try:
         misses = await repos.misses.get_all_sorted_by_count(session)
-        return {"status": "ok", "misses": misses}
+        total = len(misses)
+        paginated = misses[offset : offset + limit]
+
+        return {
+            "status": "ok",
+            "total": total,
+            "limit": limit,
+            "offset": offset,
+            "misses": paginated,
+        }
     except Exception as e:
-        logger.error(f"Misses failed: {e}")
+        logger.error(f"Misses failed: {e}", exc_info=True)
         return {"status": "error", "message": str(e)}
 
 
 @router.get("/admin/emails")
-async def get_emails(session: AsyncSession = Depends(get_db_session)):
-    """All captured emails."""
+async def get_emails(
+    session: AsyncSession = Depends(get_db_session),
+    limit: int = Query(default=20, ge=1, le=100),
+    offset: int = Query(default=0, ge=0),
+):
+    """All captured emails (paginated)."""
     try:
         emails = await repos.emails.get_all(session)
-        return {"status": "ok", "emails": emails}
+        total = len(emails)
+        paginated = emails[offset : offset + limit]
+
+        return {
+            "status": "ok",
+            "total": total,
+            "limit": limit,
+            "offset": offset,
+            "emails": paginated,
+        }
     except Exception as e:
-        logger.error(f"Emails failed: {e}")
+        logger.error(f"Emails failed: {e}", exc_info=True)
         return {"status": "error", "message": str(e)}
 
 

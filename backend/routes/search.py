@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Query, Depends
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, validator
+from typing import Literal
 import logging
 from sqlalchemy.ext.asyncio import AsyncSession
 from backend.db.connection import get_db_session
@@ -10,17 +11,31 @@ router = APIRouter()
 
 
 class SearchRequest(BaseModel):
-    product_name: str
-    locale: str = "in"
-    trust_score_min: float = 0.0
-    trust_score_max: float = 10.0
-    auth_score_min: int = 0
-    source: str = "all"
+    product_name: str = Field(..., min_length=1, max_length=255)
+    locale: Literal["in", "us", "uk"] = "in"
+    trust_score_min: float = Field(default=0.0, ge=0.0, le=10.0)
+    trust_score_max: float = Field(default=10.0, ge=0.0, le=10.0)
+    auth_score_min: int = Field(default=0, ge=0, le=100)
+    source: Literal["all", "youtube", "amazon"] = "all"
     confidence_tiers: list[str] = []
-    category: str | None = None
-    sort_by: str = "score"
-    limit: int = 20
-    offset: int = 0
+    category: str | None = Field(default=None, max_length=100)
+    sort_by: Literal["score", "recent", "popular"] = "score"
+    limit: int = Field(default=20, ge=1, le=100)
+    offset: int = Field(default=0, ge=0)
+
+    @validator("trust_score_max")
+    def validate_score_range(cls, v, values):
+        if "trust_score_min" in values and v < values["trust_score_min"]:
+            raise ValueError("trust_score_max must be >= trust_score_min")
+        return v
+
+    @validator("confidence_tiers")
+    def validate_tiers(cls, v):
+        valid_tiers = {"early", "growing", "established", "mature"}
+        for tier in v:
+            if tier not in valid_tiers:
+                raise ValueError(f"Invalid tier: {tier}")
+        return v
 
 
 @router.post("/api/v1/search")
