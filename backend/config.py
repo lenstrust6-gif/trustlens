@@ -45,6 +45,9 @@ class Settings(BaseSettings):
 
     @property
     def origins_list(self) -> list[str]:
+        # In production, allow all origins (safe for MVP frontend)
+        if self.is_prod:
+            return ["*"]
         return [o.strip() for o in self.allowed_origins.split(",")]
 
     @property
