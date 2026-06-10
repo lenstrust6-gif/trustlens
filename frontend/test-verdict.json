@@ -1,0 +1,74 @@
+{
+  "product": {
+    "name": "boAt Airdopes 311 Pro",
+    "slug": "boat-airdopes-311-pro",
+    "category": "tws-earbuds",
+    "locale": "in"
+  },
+  "trustScore": 8.4,
+  "confidenceTier": "established",
+  "summary": "The boAt Airdopes 311 Pro delivers exceptional value with premium sound quality and impressive battery life. While ANC isn't class-leading, the overall package—including solid build quality and reliability—makes it an excellent choice for daily users and commuters.",
+  "pros": [
+    {"text": "Excellent battery life", "mentions": 156},
+    {"text": "Great sound quality", "mentions": 142},
+    {"text": "Affordable price", "mentions": 128}
+  ],
+  "cons": [
+    {"text": "Weak noise cancellation", "mentions": 67},
+    {"text": "Occasional connectivity issues", "mentions": 34}
+  ],
+  "bestFor": [
+    "Daily commuters with long listening sessions",
+    "Budget-conscious buyers seeking premium sound",
+    "Users who prioritize battery over ANC"
+  ],
+  "avoidIf": [
+    "You need professional-grade noise cancellation",
+    "You require always-on transparency mode"
+  ],
+  "specTags": {
+    "battery_life": "confirms",
+    "sound_quality": "confirms",
+    "anc_quality": "mixed",
+    "comfort": "confirms",
+    "value_for_money": "confirms"
+  },
+  "featureScores": {
+    "battery_life": 8.7,
+    "sound_quality": 8.5,
+    "comfort_fit": 8.2,
+    "anc_quality": 6.8,
+    "call_quality": 7.9,
+    "connectivity": 7.5,
+    "value_for_money": 9.1
+  },
+  "reviewHighlights": [
+    {
+      "source": "youtube",
+      "text": "Amazing battery life—lasts 2+ days with active use. Sound is crisp, balanced, and punchy. Best value earbuds under $100.",
+      "rating": 4.5,
+      "authScore": 87
+    },
+    {
+      "source": "amazon",
+      "text": "Great value for the price. Much better than many premium options. Highly recommend for daily commuters.",
+      "rating": 4.0,
+      "authScore": 79
+    },
+    {
+      "source": "youtube",
+      "text": "ANC is decent but not amazing. Overall solid earbuds—great bass, good mids. Perfect for gym and outdoor use.",
+      "rating": 4.0,
+      "authScore": 84
+    }
+  ],
+  "sourcePanel": {
+    "youtubeCount": 156,
+    "amazonCount": 89,
+    "authScoreAvg": 81.3,
+    "excludedCount": 24,
+    "lastRefreshed": "2026-06-10T10:30:00Z"
+  },
+  "alternatives": [],
+  "locale": "in"
+}

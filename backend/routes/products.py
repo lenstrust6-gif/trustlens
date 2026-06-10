@@ -190,6 +190,10 @@ async def get_related_products(locale: str, slug: str, session: AsyncSession = D
                 "summary": v.summary or "No verdict available",
                 "confidence_tier": v.confidence_tier,
                 "source_count_yt": v.source_count_yt,
+                "source_count_amz": v.source_count_amz,
+                "feature_scores": v.feature_scores or {},
+                "spec_tags": v.spec_tags or {},
+                "auth_score_avg": float(v.auth_score_avg) if v.auth_score_avg else 0.0,
             }
 
             # Similar: within ±1.5 trust score
@@ -207,8 +211,13 @@ async def get_related_products(locale: str, slug: str, session: AsyncSession = D
             "status": "ok",
             "current_product": {
                 "name": product.name,
+                "slug": product.slug,
                 "trust_score": float(verdict.trust_score),
                 "category": product.category,
+                "confidence_tier": verdict.confidence_tier,
+                "feature_scores": verdict.feature_scores or {},
+                "spec_tags": verdict.spec_tags or {},
+                "auth_score_avg": float(verdict.auth_score_avg) if verdict.auth_score_avg else 0.0,
             },
             "similar_products": similar[:3],  # Top 3
             "better_alternatives": better_alternatives[:3],  # Top 3

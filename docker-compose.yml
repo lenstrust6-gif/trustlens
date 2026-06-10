@@ -1,12 +1,10 @@
-version: '3.8'
-
 services:
   postgres:
     image: postgres:16
     environment:
-      POSTGRES_DB: trustlens
-      POSTGRES_USER: trustlens
       POSTGRES_PASSWORD: trustlens
+      POSTGRES_USER: trustlens
+      POSTGRES_DB: trustlens
     ports:
       - "5432:5432"
     volumes:
