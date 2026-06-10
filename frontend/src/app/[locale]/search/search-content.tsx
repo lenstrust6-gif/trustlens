@@ -114,8 +114,13 @@ export default function SearchContent({ locale }: SearchContentProps) {
           const dedupedResults = (data.results || []).filter(result => {
             const slug = result.product?.slug
             if (!slug) return true
-            if (seen.has(slug)) return false
-            seen.add(slug)
+
+            const slugLower = slug.toLowerCase()
+            if (seen.has(slugLower)) {
+              console.log(`[SearchContent] Filtered duplicate: ${slugLower}`)
+              return false
+            }
+            seen.add(slugLower)
             return true
           })
 

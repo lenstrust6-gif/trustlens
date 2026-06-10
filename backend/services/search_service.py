@@ -75,9 +75,15 @@ class SearchService:
             result = await session.execute(stmt)
             products = result.scalars().unique().all() or []
 
-            # Fetch verdicts for each product
+            # Fetch verdicts for each product (with deduplication by slug)
             results = []
+            seen_slugs = set()
             for product in products:
+                # Deduplicate: skip if we've already added this product slug
+                if product.slug in seen_slugs:
+                    logger.debug(f"Skipping duplicate product: {product.slug}")
+                    continue
+
                 verdict_stmt = select(VerdictModel).where(
                     VerdictModel.product_id == product.id
                 ).order_by(VerdictModel.created_at.desc()).limit(1)
@@ -85,6 +91,7 @@ class SearchService:
                 verdict = verdict_result.scalar()
 
                 if verdict:
+                    seen_slugs.add(product.slug)
                     results.append({
                         "product": {
                             "id": str(product.id),
