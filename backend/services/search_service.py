@@ -2,7 +2,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
 from backend.db.models import ProductModel, VerdictModel
-from decimal import Decimal
 import logging
 
 logger = logging.getLogger(__name__)
@@ -10,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 class SearchService:
     """Search and filter products from database."""
-    
+
     @staticmethod
     async def search_products(
         session: AsyncSession,
@@ -26,13 +25,9 @@ class SearchService:
     ) -> dict:
         """Search products with filters applied."""
         try:
-            # Build base query
+            # Step 1: Query all products that match search criteria
             stmt = select(ProductModel)
 
-            # Add verdict join for filtering
-            stmt = stmt.outerjoin(VerdictModel)
-
-            # Apply text search filter
             if query:
                 search_term = f"%{query.lower()}%"
                 stmt = stmt.where(
@@ -40,84 +35,64 @@ class SearchService:
                     ProductModel.brand.ilike(search_term)
                 )
 
-            # Apply category filter
             if category:
                 stmt = stmt.where(ProductModel.category == category)
 
-            # Apply trust score filter
-            if trust_score_min > 0 or trust_score_max < 10:
-                stmt = stmt.where(
-                    VerdictModel.trust_score >= Decimal(str(trust_score_min)),
-                    VerdictModel.trust_score <= Decimal(str(trust_score_max)),
-                )
-
-            # Apply auth score filter
-            if auth_score_min > 0:
-                stmt = stmt.where(
-                    VerdictModel.auth_score_avg >= auth_score_min
-                )
-
-            # Apply confidence tier filter
-            if confidence_tiers:
-                stmt = stmt.where(
-                    VerdictModel.confidence_tier.in_(confidence_tiers)
-                )
-
-            # Get total count
-            count_stmt = select(func.count()).select_from(stmt.alias())
-            count_result = await session.execute(count_stmt)
-            total = count_result.scalar() or 0
-
-            # Apply pagination
-            stmt = stmt.distinct().offset(offset).limit(limit)
-
-            # Execute query
             result = await session.execute(stmt)
-            products = result.scalars().unique().all() or []
+            all_matching_products = result.scalars().unique().all() or []
 
-            # Fetch verdicts for each product (with deduplication by slug)
-            results = []
-            seen_slugs = set()
-            for product in products:
-                # Deduplicate: skip if we've already added this product slug
-                if product.slug in seen_slugs:
-                    logger.debug(f"Skipping duplicate product: {product.slug}")
-                    continue
-
+            # Step 2: For each product, fetch latest verdict and apply filters
+            filtered_results = []
+            for product in all_matching_products:
                 verdict_stmt = select(VerdictModel).where(
                     VerdictModel.product_id == product.id
                 ).order_by(VerdictModel.created_at.desc()).limit(1)
                 verdict_result = await session.execute(verdict_stmt)
                 verdict = verdict_result.scalar()
 
-                if verdict:
-                    seen_slugs.add(product.slug)
-                    results.append({
-                        "product": {
-                            "id": str(product.id),
-                            "name": product.name,
-                            "slug": product.slug,
-                            "category": product.category,
-                            "brand": product.brand,
-                            "locale": product.locale,
-                        },
-                        "trust_score": float(verdict.trust_score) if verdict.trust_score else 0,
-                        "confidence_tier": verdict.confidence_tier,
-                        "summary": verdict.summary,
-                        "pros": verdict.pros or [],
-                        "cons": verdict.cons or [],
-                        "best_for": verdict.best_for or [],
-                        "avoid_if": verdict.avoid_if or [],
-                        "feature_scores": verdict.feature_scores or {},
-                        "spec_tags": verdict.spec_tags or {},
-                        "source_count_yt": verdict.source_count_yt or 0,
-                        "source_count_amz": verdict.source_count_amz or 0,
-                        "auth_score_avg": float(verdict.auth_score_avg) if verdict.auth_score_avg else 0,
-                    })
+                if not verdict:
+                    continue
+
+                # Apply verdict-based filters
+                if verdict.trust_score and (verdict.trust_score < trust_score_min or verdict.trust_score > trust_score_max):
+                    continue
+
+                if auth_score_min > 0 and verdict.auth_score_avg and verdict.auth_score_avg < auth_score_min:
+                    continue
+
+                if confidence_tiers and verdict.confidence_tier not in confidence_tiers:
+                    continue
+
+                filtered_results.append({
+                    "product": {
+                        "id": str(product.id),
+                        "name": product.name,
+                        "slug": product.slug,
+                        "category": product.category,
+                        "brand": product.brand,
+                        "locale": product.locale,
+                    },
+                    "trust_score": float(verdict.trust_score) if verdict.trust_score else 0,
+                    "confidence_tier": verdict.confidence_tier,
+                    "summary": verdict.summary,
+                    "pros": verdict.pros or [],
+                    "cons": verdict.cons or [],
+                    "best_for": verdict.best_for or [],
+                    "avoid_if": verdict.avoid_if or [],
+                    "feature_scores": verdict.feature_scores or {},
+                    "spec_tags": verdict.spec_tags or {},
+                    "source_count_yt": verdict.source_count_yt or 0,
+                    "source_count_amz": verdict.source_count_amz or 0,
+                    "auth_score_avg": float(verdict.auth_score_avg) if verdict.auth_score_avg else 0,
+                })
+
+            # Step 3: Apply pagination to filtered results
+            total = len(filtered_results)
+            paginated_results = filtered_results[offset : offset + limit]
 
             return {
                 "total": total,
-                "results": results,
+                "results": paginated_results,
                 "limit": limit,
                 "offset": offset,
             }

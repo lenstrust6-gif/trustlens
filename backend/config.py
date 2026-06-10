@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     allowed_origins: str = "http://localhost:3000,http://localhost:8000"
 
     # Database
-    database_url: str = "postgresql+asyncpg://trustlens:trustlens@localhost:5432/trustlens"
+    database_url: str = "postgresql+asyncpg://neondb_owner:password@localhost:5432/neondb"
 
     # Cache
     redis_url: str = "redis://localhost:6379"
@@ -40,7 +40,7 @@ class Settings(BaseSettings):
     refresh_pause: bool = False
 
     class Config:
-        env_file = ".env"
+        env_file = "/Users/tusway/TrustLens/backend/.env"
         case_sensitive = False
 
     @property
