@@ -74,7 +74,6 @@ export interface SearchResults {
 
 export const api = {
   async search(productName: string, locale: string, filters?: any): Promise<SearchResults> {
-    console.log('[API.search] Called with:', { productName, locale, filters })
     const searchLower = productName.toLowerCase()
 
     // Build request with filters (map frontend filter names to backend names)
@@ -90,7 +89,6 @@ export const api = {
 
     // Try API call first
     try {
-      console.log('[API Search] Starting request to:', `${API_URL}/api/v1/search`)
       const controller = new AbortController()
       const timeoutId = setTimeout(() => controller.abort(), 10000) // 10 second timeout
 
@@ -102,11 +100,9 @@ export const api = {
       })
 
       clearTimeout(timeoutId)
-      console.log('[API Search] Response status:', res.status, 'OK:', res.ok)
 
       if (res.ok) {
         const data = await res.json()
-        console.log('[API Search] Raw response:', data)
 
         // Ensure results is always an array
         let results = []
@@ -136,13 +132,11 @@ export const api = {
                 locale: r?.locale || 'in',
               }
             } catch (err) {
-              console.error('[API Search] Error transforming result:', r, err)
               return null
             }
           }).filter((r: any) => r !== null)
         }
 
-        console.log('[API Search] Transformed results:', results)
         return {
           total: results.length,
           results,

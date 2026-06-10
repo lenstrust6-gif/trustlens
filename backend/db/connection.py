@@ -19,17 +19,17 @@ def _get_engine():
                 settings.database_url,
                 echo=settings.is_dev,
                 future=True,
-                pool_pre_ping=False,  # Disable ping to avoid connection attempts
-                pool_recycle=3600,
-                pool_size=5,
-                max_overflow=10,
+                pool_pre_ping=True,  # Validate connections before using (prevents stale connections)
+                pool_recycle=3600,  # Recycle connections after 1 hour
+                pool_size=10,  # Increased from 5 to handle concurrent requests
+                max_overflow=20,  # Allow overflow for spikes
                 connect_args={
                     "statement_cache_size": 0,
-                    "timeout": 5,
+                    "timeout": 10,
                 },
             )
         except Exception as e:
-            logger.warning(f"Failed to create database engine: {e}")
+            logger.error(f"Failed to create database engine: {e}", exc_info=True)
             return None
     return _engine
 

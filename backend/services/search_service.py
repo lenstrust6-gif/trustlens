@@ -96,14 +96,23 @@ class SearchService:
                 "limit": limit,
                 "offset": offset,
             }
-        except Exception as e:
-            logger.error(f"Search products failed: {e}")
+        except ValueError as e:
+            logger.error(f"Search validation error: {e}")
             return {
                 "total": 0,
                 "results": [],
                 "limit": limit,
                 "offset": offset,
-                "error": str(e),
+                "error": f"Invalid search parameters: {str(e)}",
+            }
+        except Exception as e:
+            logger.error(f"Search products failed: {e}", exc_info=True)
+            return {
+                "total": 0,
+                "results": [],
+                "limit": limit,
+                "offset": offset,
+                "error": "Internal server error",
             }
     
     @staticmethod

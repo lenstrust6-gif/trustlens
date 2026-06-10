@@ -1,5 +1,6 @@
-from fastapi import APIRouter, Depends
-from pydantic import BaseModel
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel, EmailStr, Field
+from typing import Literal
 from sqlalchemy.ext.asyncio import AsyncSession
 from backend.db.connection import get_db_session
 from backend.db import repositories as repos
@@ -10,9 +11,9 @@ router = APIRouter()
 
 
 class SubmitRequest(BaseModel):
-    product_name: str
-    email: str
-    locale: str = "in"
+    product_name: str = Field(..., min_length=1, max_length=255)
+    email: EmailStr
+    locale: Literal["in", "us", "uk"] = "in"
 
 
 class SubmitResponse(BaseModel):
@@ -23,8 +24,6 @@ class SubmitResponse(BaseModel):
 @router.post("/api/v1/submit")
 async def submit_product(request: SubmitRequest, session: AsyncSession = Depends(get_db_session)):
     """Submit product for analysis + capture email for notify-me."""
-    logger.info(f"Submit request: {request.product_name} from {request.email}")
-
     try:
         # Capture email for notify-me
         await repos.emails.create(
@@ -44,8 +43,15 @@ async def submit_product(request: SubmitRequest, session: AsyncSession = Depends
             status="ok",
             message=f"Product '{request.product_name}' submitted. We'll analyze it and email {request.email} when ready!",
         )
+    except ValueError as e:
+        logger.error(f"Validation error in submit: {e}")
+        await session.rollback()
+        return SubmitResponse(
+            status="error",
+            message=f"Invalid input: {str(e)}",
+        )
     except Exception as e:
-        logger.error(f"Submit failed: {e}")
+        logger.error(f"Submit failed: {e}", exc_info=True)
         await session.rollback()
         return SubmitResponse(
             status="error",
