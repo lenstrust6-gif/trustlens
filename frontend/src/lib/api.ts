@@ -177,13 +177,13 @@ export const api = {
     // Apply filters if provided
     if (filters) {
       if (filters.trust_min !== undefined) {
-        filtered = filtered.filter(v => v.trustScore >= filters.trust_min)
+        filtered = filtered.filter(v => v.trustScore >= filters.trust_min!)
       }
       if (filters.trust_max !== undefined) {
-        filtered = filtered.filter(v => v.trustScore <= filters.trust_max)
+        filtered = filtered.filter(v => v.trustScore <= filters.trust_max!)
       }
       if (filters.auth_min !== undefined) {
-        filtered = filtered.filter(v => v.sourcePanel.authScoreAvg >= filters.auth_min)
+        filtered = filtered.filter(v => v.sourcePanel.authScoreAvg >= filters.auth_min!)
       }
       if (filters.source === 'youtube') {
         filtered = filtered.filter(v => v.sourcePanel.youtubeCount > 0)
