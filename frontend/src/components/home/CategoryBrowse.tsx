@@ -1,29 +1,105 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import SectionLabel from '../shared/SectionLabel'
 import Card from '../shared/Card'
 import TabGroup from '../shared/TabGroup'
-import { CATEGORIES } from '@/lib/home-data'
+
+interface Category {
+  name: string
+  slug: string
+  product_count: number
+}
+
+interface Product {
+  id: string
+  name: string
+  slug: string
+  brand: string
+  category: string
+}
 
 interface CategoryBrowseProps {
   locale: string
 }
 
-export default function CategoryBrowse({ locale }: CategoryBrowseProps) {
-  const [activeCategory, setActiveCategory] = useState('earbuds')
+const CATEGORY_LABELS: Record<string, string> = {
+  'tws-earbuds': '🎧 TWS Earbuds',
+  'smartwatches': '⌚ Smartwatches',
+  'wireless-headphones': '🎧 Wireless Headphones',
+  'bluetooth-speakers': '🔊 Bluetooth Speakers',
+  'power-banks': '🔋 Power Banks',
+  'smartphones': '📱 Smartphones',
+  'laptops': '💻 Laptops',
+  'cameras': '📷 Cameras',
+  'smartbands': '⌚ Smart Bands',
+  'tablets': '📱 Tablets',
+}
 
-  const tabs = Object.entries(CATEGORIES).map(([key, value]) => ({
-    id: key,
-    label: value.label,
+export default function CategoryBrowse({ locale }: CategoryBrowseProps) {
+  const [categories, setCategories] = useState<Category[]>([])
+  const [quickPicks, setQuickPicks] = useState<Record<string, Product[]>>({})
+  const [activeCategory, setActiveCategory] = useState<string>('')
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+
+        // Fetch categories
+        const categoriesRes = await fetch(`${apiUrl}/api/v1/categories/${locale}`)
+        const categoriesData = await categoriesRes.json()
+
+        if (categoriesData.status === 'ok' && categoriesData.categories) {
+          setCategories(categoriesData.categories)
+          setActiveCategory(categoriesData.categories[0]?.slug || '')
+        }
+
+        // Fetch quick picks for all categories
+        const quickPicksRes = await fetch(`${apiUrl}/api/v1/categories/${locale}/quick-picks`)
+        const quickPicksData = await quickPicksRes.json()
+
+        if (quickPicksData.status === 'ok' && quickPicksData.quick_picks) {
+          setQuickPicks(quickPicksData.quick_picks)
+        }
+      } catch (error) {
+        console.error('Failed to fetch categories:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [locale])
+
+  const tabs = categories.map((cat) => ({
+    id: cat.slug,
+    label: CATEGORY_LABELS[cat.slug] || cat.name,
   }))
 
-  const currentPicks = CATEGORIES[activeCategory as keyof typeof CATEGORIES].picks
+  const currentPicks = quickPicks[activeCategory] || []
 
-  const getBadgeColor = (badge: string) => {
-    if (badge.includes('Overall')) return 'amber'
-    if (badge.includes('Budget')) return 'green'
-    return 'blue'
+  const getProductCount = () => {
+    return categories.find(c => c.slug === activeCategory)?.product_count || 0
+  }
+
+  if (loading) {
+    return (
+      <section
+        id="categories"
+        style={{
+          padding: '60px 40px',
+          background: 'var(--bg)',
+          borderTop: '1px solid var(--border)',
+        }}
+      >
+        <div className="container" style={{ maxWidth: '1100px', margin: '0 auto' }}>
+          <SectionLabel text="BROWSE BY CATEGORY" />
+          <h2 style={{ marginBottom: '40px' }}>Loading categories...</h2>
+        </div>
+      </section>
+    )
   }
 
   return (
@@ -38,17 +114,19 @@ export default function CategoryBrowse({ locale }: CategoryBrowseProps) {
     >
       <div className="container" style={{ maxWidth: '1100px', margin: '0 auto' }}>
         {/* Section Label + Title */}
-        <SectionLabel text="BROWSE BY CATEGORY" />
+        <SectionLabel text={`BROWSE ${categories.length} CATEGORIES`} />
         <h2 style={{ marginBottom: '40px' }}>
-          Top picks across India's most-searched categories.
+          Top products across all categories.
         </h2>
 
         {/* Tab Group */}
-        <TabGroup
-          tabs={tabs}
-          activeTab={activeCategory}
-          onTabChange={setActiveCategory}
-        />
+        {tabs.length > 0 && (
+          <TabGroup
+            tabs={tabs}
+            activeTab={activeCategory}
+            onTabChange={setActiveCategory}
+          />
+        )}
 
         {/* Quick Pick Cards Grid */}
         <div
@@ -59,15 +137,12 @@ export default function CategoryBrowse({ locale }: CategoryBrowseProps) {
             marginBottom: '32px',
           }}
         >
-          {currentPicks.map((pick, idx) => {
-            const isFeatured = pick.badge.includes('Overall')
-            const badgeColor = getBadgeColor(pick.badge)
-
-            return (
+          {currentPicks.length > 0 ? (
+            currentPicks.map((product, idx) => (
               <Card
-                key={pick.name}
-                featured={isFeatured}
-                href={`/${locale}/products/${pick.slug}`}
+                key={product.slug}
+                featured={idx === 0}
+                href={`/${locale}/${product.category}/${product.slug}`}
                 style={{
                   opacity: 1,
                   transform: 'translateY(0)',
@@ -88,38 +163,38 @@ export default function CategoryBrowse({ locale }: CategoryBrowseProps) {
                       lineHeight: 1,
                     }}
                   >
-                    {pick.badge.includes('Overall') && '🏆'}
-                    {pick.badge.includes('Budget') && '💰'}
-                    {pick.badge.includes('Premium') && '✨'}
+                    {idx === 0 && '🏆'}
+                    {idx === 1 && '💰'}
+                    {idx === 2 && '✨'}
                   </div>
                   <div
                     style={{
                       fontSize: '11px',
                       padding: '4px 12px',
                       background:
-                        badgeColor === 'amber'
+                        idx === 0
                           ? 'rgba(245, 158, 11, 0.12)'
-                          : badgeColor === 'green'
+                          : idx === 1
                             ? 'rgba(16, 185, 129, 0.12)'
                             : 'rgba(37, 99, 235, 0.12)',
                       border: `1px solid ${
-                        badgeColor === 'amber'
+                        idx === 0
                           ? 'rgba(245, 158, 11, 0.3)'
-                          : badgeColor === 'green'
+                          : idx === 1
                             ? 'rgba(16, 185, 129, 0.3)'
                             : 'rgba(37, 99, 235, 0.3)'
                       }`,
                       borderRadius: '4px',
                       color:
-                        badgeColor === 'amber'
+                        idx === 0
                           ? 'var(--amber)'
-                          : badgeColor === 'green'
+                          : idx === 1
                             ? 'var(--green)'
                             : 'var(--accent)',
                       fontWeight: 600,
                     }}
                   >
-                    {pick.badge}
+                    {idx === 0 ? 'Best Overall' : idx === 1 ? 'Best Budget' : 'Premium Pick'}
                   </div>
                 </div>
 
@@ -131,7 +206,7 @@ export default function CategoryBrowse({ locale }: CategoryBrowseProps) {
                     color: 'var(--text-primary)',
                   }}
                 >
-                  {pick.name}
+                  {product.name}
                 </h3>
 
                 <p
@@ -143,30 +218,8 @@ export default function CategoryBrowse({ locale }: CategoryBrowseProps) {
                     lineHeight: '1.5',
                   }}
                 >
-                  Trusted by thousands of Indian users across all categories.
+                  {product.brand} • Trusted by Indian users
                 </p>
-
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'baseline',
-                    gap: '8px',
-                  }}
-                >
-                  <div
-                    style={{
-                      fontSize: '26px',
-                      fontFamily: 'var(--font-mono)',
-                      color: 'var(--accent)',
-                      fontWeight: 600,
-                    }}
-                  >
-                    {pick.score}
-                  </div>
-                  <div style={{ fontSize: '14px', color: 'var(--text-muted)' }}>
-                    /10
-                  </div>
-                </div>
 
                 <div
                   style={{
@@ -176,33 +229,37 @@ export default function CategoryBrowse({ locale }: CategoryBrowseProps) {
                     fontWeight: 600,
                   }}
                 >
-                  ✓ Recommended
+                  ✓ In Database
                 </div>
               </Card>
-            )
-          })}
+            ))
+          ) : (
+            <p style={{ color: 'var(--text-muted)' }}>No products found for this category</p>
+          )}
         </div>
 
         {/* View All Link */}
-        <div style={{ textAlign: 'center' }}>
-          <a
-            href={`/${locale}/${activeCategory}`}
-            style={{
-              fontSize: '13px',
-              color: 'var(--text-secondary)',
-              textDecoration: 'none',
-              transition: 'color var(--transition-base)',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.color = 'var(--accent)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.color = 'var(--text-secondary)'
-            }}
-          >
-            View all 12 {CATEGORIES[activeCategory as keyof typeof CATEGORIES].label.split(' ')[1]} →
-          </a>
-        </div>
+        {activeCategory && (
+          <div style={{ textAlign: 'center' }}>
+            <a
+              href={`/${locale}/${activeCategory}`}
+              style={{
+                fontSize: '13px',
+                color: 'var(--text-secondary)',
+                textDecoration: 'none',
+                transition: 'color var(--transition-base)',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = 'var(--accent)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = 'var(--text-secondary)'
+              }}
+            >
+              View all {getProductCount()} products in {CATEGORY_LABELS[activeCategory] || activeCategory} →
+            </a>
+          </div>
+        )}
       </div>
     </section>
   )

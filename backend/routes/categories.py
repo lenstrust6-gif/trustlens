@@ -55,3 +55,67 @@ async def get_categories(
             "message": "Failed to fetch categories",
             "categories": [],
         }
+
+
+@router.get("/api/v1/categories/{locale}/quick-picks")
+async def get_category_quick_picks(
+    locale: Literal["in", "us", "uk"],
+    limit: int = 3,
+    session: AsyncSession = Depends(get_db_session),
+):
+    """Get quick picks (top products by trust score) for all categories."""
+    logger.info(f"Quick picks request: {locale}")
+
+    try:
+        # Get all categories first
+        categories_stmt = (
+            select(ProductModel.category)
+            .where(ProductModel.locale == locale)
+            .distinct()
+        )
+        categories_result = await session.execute(categories_stmt)
+        categories = [row[0] for row in categories_result.all()]
+
+        quick_picks = {}
+
+        # For each category, get top N products
+        for category in categories:
+            stmt = (
+                select(
+                    ProductModel.id,
+                    ProductModel.name,
+                    ProductModel.slug,
+                    ProductModel.brand,
+                    ProductModel.category,
+                )
+                .where(
+                    ProductModel.locale == locale,
+                    ProductModel.category == category,
+                )
+                .limit(limit)
+            )
+            result = await session.execute(stmt)
+            products = [
+                {
+                    "id": row.id,
+                    "name": row.name,
+                    "slug": row.slug,
+                    "brand": row.brand,
+                    "category": row.category,
+                }
+                for row in result.all()
+            ]
+            quick_picks[category] = products
+
+        return {
+            "status": "ok",
+            "locale": locale,
+            "quick_picks": quick_picks,
+        }
+    except Exception as e:
+        logger.error(f"Quick picks failed: {e}", exc_info=True)
+        return {
+            "status": "error",
+            "message": "Failed to fetch quick picks",
+            "quick_picks": {},
+        }
