@@ -152,10 +152,31 @@ Legal rule #1 (never violate in any code, string, or output):
   - Tablets: 40 products
 - [x] **100+ Brands Coverage** — Consumer (boAt, Noise, Realme, OnePlus), Premium (Sony, Apple, Samsung, Bose, Sennheiser), Gaming (Corsair, HyperX, Razer), Photography (Canon, Nikon, DJI)
 
-## 🚀 LAUNCH STATUS: PRODUCTION-READY + MASSIVE PRODUCT DIVERSITY (648 PRODUCTS)
+### Week 11 🔄 (IN PROGRESS — CATEGORY BROWSING + API KEY ROTATION)
+- [x] **Dynamic Category Browsing** — Frontend fetches categories from backend dynamically
+  - New backend endpoint: GET /api/v1/categories/{locale}/quick-picks
+  - CategoryBrowse component now loads all 10 categories with product counts
+  - Shows top 3 products per category
+- [x] **Dedicated Categories Landing Page** — New route /{locale}/categories
+  - Grid layout showing all 10 categories
+  - Each card displays product count, top 2 quick picks, and browse link
+  - Full responsive design, dynamic data from API
+  - Call-to-action section for product submission
+- [x] **Navigation Updates** — Categories link now points to /categories page
+  - Works on both desktop and mobile menus
+  - Smooth navigation from homepage → categories page → category details
+- 🔄 **API Key Rotation** (IN PROGRESS)
+  - [x] YOUTUBE_API_KEY — ✅ COMPLETED
+  - [ ] GROQ_API_KEY — ⏳ Pending
+  - [ ] ANTHROPIC_API_KEY — ⏳ Pending
+  - [ ] RAINFOREST_API_KEY — ⏳ Pending
+  - [ ] OXYLABS (username + password) — ⏳ Pending
+  - [ ] GOOGLE_API_KEY — ⏳ Check if still needed (fallback in verdict_writer.py)
+
+## 🚀 LAUNCH STATUS: PRODUCTION-READY + CATEGORY BROWSING LIVE (648 PRODUCTS)
 
 **Week 10 complete.** Code quality hardened (38 issues fixed), product database expanded to 648 items with 100+ brands.
-Phase 2 (Google OAuth) ready. Phase 4 (Email) + API key rotation pending.
+**Week 11 in progress.** Dynamic category browsing fully implemented. API key rotation 1/6 complete (YOUTUBE done, others pending).
 
 ### Deploy Checklist
 1. Run `python -m backend/scripts/seed_products.py` (production DB)
