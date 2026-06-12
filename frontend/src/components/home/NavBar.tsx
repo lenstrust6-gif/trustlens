@@ -132,14 +132,12 @@ export default function NavBar({ locale }: NavBarProps) {
           >
             How it works
           </button>
-          <button
-            onClick={() => handleSmoothScroll('categories')}
+          <Link
+            href={`/${locale}/categories`}
             style={{
-              background: 'none',
-              border: 'none',
               fontSize: '14px',
               color: 'var(--text-secondary)',
-              cursor: 'pointer',
+              textDecoration: 'none',
               transition: 'color var(--transition-base)',
             }}
             onMouseEnter={(e) => {
@@ -150,7 +148,7 @@ export default function NavBar({ locale }: NavBarProps) {
             }}
           >
             Categories
-          </button>
+          </Link>
           <Link
             href={`/${locale}/methodology`}
             style={{
@@ -274,20 +272,19 @@ export default function NavBar({ locale }: NavBarProps) {
           >
             How it works
           </button>
-          <button
-            onClick={() => handleSmoothScroll('categories')}
+          <Link
+            href={`/${locale}/categories`}
             style={{
-              background: 'none',
-              border: 'none',
               fontSize: '16px',
               color: 'var(--text-primary)',
-              cursor: 'pointer',
-              textAlign: 'left',
+              textDecoration: 'none',
               padding: '12px 0',
+              display: 'block',
             }}
+            onClick={() => setMobileMenuOpen(false)}
           >
             Categories
-          </button>
+          </Link>
           <Link
             href={`/${locale}/methodology`}
             style={{
