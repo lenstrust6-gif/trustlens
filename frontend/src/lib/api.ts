@@ -190,7 +190,7 @@ export const api = {
       } else if (filters.source === 'amazon') {
         filtered = filtered.filter(v => v.sourcePanel.amazonCount > 0)
       }
-      if (filters.confidence_tiers?.length > 0) {
+      if (filters.confidence_tiers && filters.confidence_tiers.length > 0) {
         filtered = filtered.filter(v => filters.confidence_tiers!.includes(v.confidenceTier))
       }
     }
