@@ -191,7 +191,7 @@ export const api = {
         filtered = filtered.filter(v => v.sourcePanel.amazonCount > 0)
       }
       if (filters.confidence_tiers?.length > 0) {
-        filtered = filtered.filter(v => filters.confidence_tiers.includes(v.confidenceTier))
+        filtered = filtered.filter(v => filters.confidence_tiers!.includes(v.confidenceTier))
       }
     }
 
