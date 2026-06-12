@@ -9,7 +9,7 @@ pydantic-settings==2.1.0
 pydantic[email]==2.5.0
 python-dotenv==1.0.0
 groq==0.4.2
-anthropic==0.7.10
+anthropic==0.109.1
 apscheduler==3.11.2
 email-validator==2.1.0
 requests==2.31.0
