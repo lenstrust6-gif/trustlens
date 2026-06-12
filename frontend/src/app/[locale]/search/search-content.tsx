@@ -33,7 +33,7 @@ export default function SearchContent({ locale }: SearchContentProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [filterPanelOpen, setFilterPanelOpen] = useState(false)
-  const [filterStats, setFilterStats] = useState<FilterStats | null>(null)
+  const [filterStats, setFilterStats] = useState<FilterStats | undefined>(undefined)
 
   // Parse filters from URL
   const filters = useMemo<SearchFiltersState>(() => {
