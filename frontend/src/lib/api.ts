@@ -199,7 +199,14 @@ export const api = {
     return {
       total: filtered.length,
       results: filtered,
-      filters_applied: filters || {},
+      filters_applied: {
+        trust_score_min: filters?.trust_min ?? 0,
+        trust_score_max: filters?.trust_max ?? 10,
+        auth_score_min: filters?.auth_min ?? 0,
+        source: filters?.source ?? 'all',
+        confidence_tiers: filters?.confidence_tiers ?? [],
+        category: null,
+      },
     }
   },
 
