@@ -1,6 +1,7 @@
 import { VerdictCard } from './types'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+const API_TIMEOUT_MS = parseInt(process.env.NEXT_PUBLIC_API_TIMEOUT || '10000', 10)
 
 // Mock data for UI demonstration when backend is unavailable
 const MOCK_VERDICTS: Record<string, VerdictCard> = {
@@ -66,18 +67,35 @@ const MOCK_VERDICTS: Record<string, VerdictCard> = {
   },
 }
 
+interface FiltersApplied {
+  trust_score_min: number
+  trust_score_max: number
+  auth_score_min: number
+  source: 'all' | 'youtube' | 'amazon'
+  confidence_tiers: string[]
+  category: string | null
+}
+
 export interface SearchResults {
   total: number
   results: VerdictCard[]
-  filters_applied: any
+  filters_applied: FiltersApplied
+}
+
+interface SearchFilters {
+  trust_min?: number
+  trust_max?: number
+  auth_min?: number
+  source?: 'all' | 'youtube' | 'amazon'
+  confidence_tiers?: string[]
 }
 
 export const api = {
-  async search(productName: string, locale: string, filters?: any): Promise<SearchResults> {
+  async search(productName: string, locale: string, filters?: SearchFilters): Promise<SearchResults> {
     const searchLower = productName.toLowerCase()
 
     // Build request with filters (map frontend filter names to backend names)
-    const searchBody: any = {
+    const searchBody = {
       product_name: productName,
       locale,
       trust_score_min: filters?.trust_min ?? 0,
@@ -90,7 +108,7 @@ export const api = {
     // Try API call first
     try {
       const controller = new AbortController()
-      const timeoutId = setTimeout(() => controller.abort(), 10000) // 10 second timeout
+      const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT_MS)
 
       const res = await fetch(`${API_URL}/api/v1/search`, {
         method: 'POST',

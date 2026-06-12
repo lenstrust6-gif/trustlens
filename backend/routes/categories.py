@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
+from typing import Literal
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
 from backend.db.connection import get_db_session
@@ -10,7 +11,10 @@ router = APIRouter()
 
 
 @router.get("/api/v1/categories/{locale}")
-async def get_categories(locale: str, session: AsyncSession = Depends(get_db_session)):
+async def get_categories(
+    locale: Literal["in", "us", "uk"],
+    session: AsyncSession = Depends(get_db_session),
+):
     """Get available categories for a locale with product counts."""
     logger.info(f"Categories request: {locale}")
 
@@ -45,9 +49,9 @@ async def get_categories(locale: str, session: AsyncSession = Depends(get_db_ses
             "total_categories": len(categories),
         }
     except Exception as e:
-        logger.error(f"Categories failed: {e}")
+        logger.error(f"Categories failed: {e}", exc_info=True)
         return {
             "status": "error",
-            "message": str(e),
+            "message": "Failed to fetch categories",
             "categories": [],
         }

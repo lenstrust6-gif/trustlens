@@ -127,7 +127,8 @@ def _get_age_months(date_str: str) -> int:
         review_date = datetime.fromisoformat(date_str.replace("Z", "+00:00"))
         age = (datetime.utcnow() - review_date).days / 30
         return int(age)
-    except Exception:
+    except (ValueError, TypeError) as e:
+        logger.warning(f"Failed to parse date '{date_str}': {e}")
         return 0
 
 

@@ -10,9 +10,6 @@ interface SearchResultsProps {
 }
 
 export default function SearchResults({ results, loading, error }: SearchResultsProps) {
-  console.log('[SearchResults] Render with props:', { results, loading, error })
-  console.log('[SearchResults] Results type:', typeof results, 'Is array:', Array.isArray(results))
-
   if (loading) {
     return (
       <div style={{ textAlign: 'center', padding: '48px 0', color: 'var(--text-muted)', fontSize: '16px' }}>
@@ -39,7 +36,6 @@ export default function SearchResults({ results, loading, error }: SearchResults
 
   // Safely handle results
   const safeResults = Array.isArray(results) ? results : []
-  console.log('[SearchResults] Safe results count:', safeResults.length)
 
   if (!safeResults || safeResults.length === 0) {
     return (
@@ -58,8 +54,7 @@ export default function SearchResults({ results, loading, error }: SearchResults
               <VerdictCard card={verdict} />
             </div>
           )
-        } catch (err) {
-          console.error('[SearchResults] Error rendering verdict:', verdict, err)
+        } catch {
           return (
             <div key={Math.random()} style={{ color: 'red', padding: '20px' }}>
               Error rendering result

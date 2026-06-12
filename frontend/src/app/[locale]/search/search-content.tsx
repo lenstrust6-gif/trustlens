@@ -15,6 +15,15 @@ interface SearchContentProps {
   locale: string
 }
 
+interface FilterStats {
+  trust_score_range: [number, number]
+  auth_score_range: [number, number]
+  sources: string[]
+  confidence_tiers: string[]
+  categories: string[]
+  total_products: number
+}
+
 export default function SearchContent({ locale }: SearchContentProps) {
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -24,7 +33,7 @@ export default function SearchContent({ locale }: SearchContentProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [filterPanelOpen, setFilterPanelOpen] = useState(false)
-  const [filterStats, setFilterStats] = useState<any>(null)
+  const [filterStats, setFilterStats] = useState<FilterStats | null>(null)
 
   // Parse filters from URL
   const filters = useMemo<SearchFiltersState>(() => {

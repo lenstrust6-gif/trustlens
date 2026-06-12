@@ -17,8 +17,12 @@ async def health_check():
         hit_rate = await get_hit_rate()
         status["redis"] = "connected"
         status["cache_hit_rate"] = hit_rate
+    except (ConnectionError, TimeoutError) as e:
+        logger.warning(f"Redis unavailable: {e}")
+        status["redis"] = "unavailable"
+        status["cache_hit_rate"] = 0.0
     except Exception as e:
-        logger.error(f"Redis health check failed: {e}")
+        logger.error(f"Redis health check failed: {e}", exc_info=True)
         status["redis"] = "error"
         status["cache_hit_rate"] = 0.0
 
