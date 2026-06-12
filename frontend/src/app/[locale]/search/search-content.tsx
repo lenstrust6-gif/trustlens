@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation'
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { api } from '@/lib/api'
 import { VerdictCard as VerdictCardType } from '@/lib/types'
-import FilterPanel, { SearchFiltersState } from '@/components/search/FilterPanel'
+import FilterPanel, { SearchFiltersState, FilterStats } from '@/components/search/FilterPanel'
 import FilterChips from '@/components/search/FilterChips'
 import SearchResults from './search-results'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
@@ -13,15 +13,6 @@ import { Filter, X } from 'lucide-react'
 
 interface SearchContentProps {
   locale: string
-}
-
-interface FilterStats {
-  trust_score_range: [number, number]
-  auth_score_range: [number, number]
-  sources: string[]
-  confidence_tiers: string[]
-  categories: string[]
-  total_products: number
 }
 
 export default function SearchContent({ locale }: SearchContentProps) {

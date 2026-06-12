@@ -21,7 +21,7 @@ export interface SearchFiltersState {
   confidence_tiers: string[]
 }
 
-interface FilterStats {
+export interface FilterStats {
   trust_score_range: [number, number]
   auth_score_range: [number, number]
   sources: { label: string; value: string; count: number }[]
