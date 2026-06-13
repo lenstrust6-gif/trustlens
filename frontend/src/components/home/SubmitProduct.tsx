@@ -47,18 +47,17 @@ export default function SubmitProduct({ locale }: SubmitProductProps) {
   return (
     <section
       style={{
-        padding: '50px 40px',
+        padding: '40px 40px 60px',
         background: 'rgba(255,255,255,0.02)',
         borderTop: '1px solid var(--border)',
       }}
       className="px-5 sm:px-8"
     >
       <div
-        className="container"
-        style={{ maxWidth: '680px', margin: '0 auto' }}
+        style={{ maxWidth: '680px', margin: '0 auto', width: '100%' }}
       >
         <SectionLabel text="CAN'T FIND YOUR PRODUCT?" />
-        <h2 style={{ marginBottom: '16px', textAlign: 'center' }}>
+        <h2 style={{ marginBottom: '16px', textAlign: 'center', color: 'var(--text-primary)' }}>
           Tell us. We'll analyse it within 24 hours.
         </h2>
 

@@ -55,11 +55,11 @@ export default function TabGroup({
             fontFamily: 'var(--font-body)',
             border:
               activeTab === tab.id
-                ? '1px solid rgba(37, 99, 235, 0.7)'
+                ? '1px solid rgba(37, 99, 235, 0.8)'
                 : '1px solid var(--border)',
             background:
               activeTab === tab.id
-                ? 'rgba(37, 99, 235, 0.20)'
+                ? 'rgba(37, 99, 235, 0.25)'
                 : 'transparent',
             color:
               activeTab === tab.id

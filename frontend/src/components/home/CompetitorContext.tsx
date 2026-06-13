@@ -11,14 +11,14 @@ export default function CompetitorContext({ locale }: CompetitorContextProps) {
   return (
     <section
       style={{
-        padding: '50px 40px',
+        padding: '40px 40px 60px',
         background: 'var(--bg)',
         borderTop: '1px solid var(--border)',
       }}
       className="px-5 sm:px-8"
     >
       <div className="container" style={{ maxWidth: '900px', margin: '0 auto' }}>
-        <h2 style={{ textAlign: 'center', marginBottom: '32px' }}>
+        <h2 style={{ textAlign: 'center', marginBottom: '32px', color: 'var(--text-primary)' }}>
           The tools you relied on are gone.
         </h2>
 

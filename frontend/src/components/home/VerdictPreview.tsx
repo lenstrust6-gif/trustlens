@@ -42,7 +42,7 @@ export default function VerdictPreview({ locale }: VerdictPreviewProps) {
     <section
       id="verdict-preview"
       style={{
-        padding: '60px 40px',
+        padding: '40px 40px 60px',
         background: 'var(--bg)',
       }}
       className="px-5 sm:px-8"
@@ -50,7 +50,7 @@ export default function VerdictPreview({ locale }: VerdictPreviewProps) {
       <div className="container" style={{ maxWidth: '1100px', margin: '0 auto' }}>
         {/* Section Label + Title */}
         <SectionLabel text="WHAT YOU GET" />
-        <h2 style={{ marginBottom: '60px' }}>
+        <h2 style={{ marginBottom: '60px', color: 'var(--text-primary)' }}>
           One search. A verdict you can actually use.
         </h2>
 

@@ -96,7 +96,7 @@ export default function CategoryBrowse({ locale }: CategoryBrowseProps) {
       >
         <div className="container" style={{ maxWidth: '1100px', margin: '0 auto' }}>
           <SectionLabel text="BROWSE BY CATEGORY" />
-          <h2 style={{ marginBottom: '40px' }}>Loading categories...</h2>
+          <h2 style={{ marginBottom: '40px', color: 'var(--text-primary)' }}>Loading categories...</h2>
         </div>
       </section>
     )
@@ -106,7 +106,7 @@ export default function CategoryBrowse({ locale }: CategoryBrowseProps) {
     <section
       id="categories"
       style={{
-        padding: '60px 40px',
+        padding: '40px 40px 60px',
         background: 'var(--bg)',
         borderTop: '1px solid var(--border)',
       }}
@@ -115,7 +115,7 @@ export default function CategoryBrowse({ locale }: CategoryBrowseProps) {
       <div className="container" style={{ maxWidth: '1100px', margin: '0 auto' }}>
         {/* Section Label + Title */}
         <SectionLabel text={`BROWSE ${categories.length} CATEGORIES`} />
-        <h2 style={{ marginBottom: '40px' }}>
+        <h2 style={{ marginBottom: '40px', color: 'var(--text-primary)' }}>
           Top products across all categories.
         </h2>
 

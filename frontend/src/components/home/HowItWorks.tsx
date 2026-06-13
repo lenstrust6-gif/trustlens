@@ -62,7 +62,7 @@ export default function HowItWorks({ locale }: HowItWorksProps) {
     <section
       id="how-it-works"
       style={{
-        padding: '60px 40px',
+        padding: '40px 40px 60px',
         background: 'var(--bg)',
       }}
       className="px-5 sm:px-8"
