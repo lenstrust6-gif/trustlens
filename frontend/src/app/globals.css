@@ -16,7 +16,4 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-/* Force h1, h2 to use bright text color for proper visual hierarchy */
-h1, h2 {
-  color: #F0F4F8 !important;
-}
+/* h1, h2 color handled by trustlens-theme.css */
