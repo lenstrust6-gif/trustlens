@@ -34,7 +34,7 @@ export default function HeroSection({ locale }: HeroSectionProps) {
         alignItems: 'center',
         justifyContent: 'center',
         position: 'relative',
-        padding: '100px 40px 80px',
+        padding: '80px 40px 80px',
         background: 'var(--bg)',
         overflow: 'hidden',
       }}

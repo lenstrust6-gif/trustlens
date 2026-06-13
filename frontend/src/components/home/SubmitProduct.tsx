@@ -54,7 +54,7 @@ export default function SubmitProduct({ locale }: SubmitProductProps) {
       className="px-5 sm:px-8"
     >
       <div
-        style={{ maxWidth: '680px', margin: '0 auto', width: '100%' }}
+        style={{ maxWidth: '480px', margin: '0 auto', width: '100%' }}
       >
         <SectionLabel text="CAN'T FIND YOUR PRODUCT?" />
         <h2 style={{ marginBottom: '16px', textAlign: 'center', color: 'var(--text-primary)' }}>

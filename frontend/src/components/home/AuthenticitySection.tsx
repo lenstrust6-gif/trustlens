@@ -33,7 +33,7 @@ export default function AuthenticitySection({ locale }: AuthenticicitySectionPro
           {/* Left Column */}
           <div>
             <SectionLabel text="THE AUTHENTICITY SCORE" />
-            <h2 style={{ marginBottom: '20px', color: 'var(--text-primary)' }}>
+            <h2 style={{ marginBottom: '20px', color: 'var(--text-primary)', fontFamily: 'var(--font-display)' }}>
               We never call a review fake.
               <br />
               We score how trustworthy it is.
