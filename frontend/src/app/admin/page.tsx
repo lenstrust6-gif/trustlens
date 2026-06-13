@@ -3,6 +3,7 @@ export const dynamic = 'force-dynamic'
 
 import { useEffect, useState } from 'react'
 import { api } from '@/lib/api'
+import StagingQueueSection from '@/components/admin/StagingQueueSection'
 
 interface AdminStats {
   total_products: number
@@ -26,7 +27,7 @@ export default function AdminPage() {
   const [stats, setStats] = useState<AdminStats | null>(null)
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState<'overview' | 'products'>('overview')
+  const [activeTab, setActiveTab] = useState<'overview' | 'products' | 'staging'>('overview')
 
   useEffect(() => {
     const loadData = async () => {
@@ -70,6 +71,14 @@ export default function AdminPage() {
             Overview
           </button>
           <button
+            onClick={() => setActiveTab('staging')}
+            className={`px-4 py-2 font-semibold ${
+              activeTab === 'staging' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-600'
+            }`}
+          >
+            Staging Queue
+          </button>
+          <button
             onClick={() => setActiveTab('products')}
             className={`px-4 py-2 font-semibold ${
               activeTab === 'products' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-600'
@@ -78,6 +87,11 @@ export default function AdminPage() {
             Products
           </button>
         </div>
+
+        {/* Staging Queue Tab */}
+        {activeTab === 'staging' && (
+          <StagingQueueSection />
+        )}
 
         {/* Overview Tab */}
         {activeTab === 'overview' && stats && (

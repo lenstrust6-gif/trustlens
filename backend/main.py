@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from backend.config import settings
 from backend.cache import init_redis, close_redis
-from backend.routes import health, search, products, submit, categories, admin, auth, ratings, quick_picks, filters, affiliate, users
+from backend.routes import health, search, products, submit, categories, admin, admin_staging, auth, ratings, quick_picks, filters, affiliate, users
 from backend.workers.refresh_scheduler import refresh_stale_products
 from backend.db.connection import _get_session_factory
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -86,6 +86,7 @@ app.include_router(products.router)
 app.include_router(submit.router)
 app.include_router(categories.router)
 app.include_router(admin.router)
+app.include_router(admin_staging.router)
 app.include_router(auth.router)
 app.include_router(ratings.router)
 app.include_router(quick_picks.router)
