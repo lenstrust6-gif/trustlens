@@ -12,14 +12,60 @@ export default function AuthenticitySection({ locale }: AuthenticicitySectionPro
   return (
     <section
       style={{
-        padding: '36px 40px 48px',
-        background: 'rgba(0,0,0,0.02)',
+        padding: '72px 40px 60px',
+        background: 'var(--bg)',
         borderTop: '1px solid var(--border)',
-        borderBottom: '1px solid var(--border)',
       }}
       className="px-5 sm:px-8"
     >
       <div className="container" style={{ maxWidth: '1100px', margin: '0 auto' }}>
+        {/* Section Label */}
+        <SectionLabel text="HOW IT WORKS" />
+
+        {/* Main Heading */}
+        <h2 style={{ marginBottom: '48px', color: 'var(--text-primary)', fontFamily: 'var(--font-display)' }}>
+          Our 6-signal Authenticity Scoring system
+        </h2>
+
+        {/* Scoring Signals Grid */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+            gap: '24px',
+            marginBottom: '64px',
+          }}
+        >
+          {[
+            { signal: 'Language Specificity', desc: 'Real reviews use specific product details, not generic praise' },
+            { signal: 'Reviewer History', desc: 'Long-term reviewers with consistent patterns are more trustworthy' },
+            { signal: 'Sentiment Coherence', desc: 'Genuine opinions balance criticism with praise' },
+            { signal: 'Timing Patterns', desc: 'Authentic reviews spread naturally, not in suspicious bursts' },
+            { signal: 'Cross-platform Uniqueness', desc: 'Same reviews on multiple platforms signal inauthenticity' },
+            { signal: 'Incentivized Language', desc: 'AI detects sponsored/paid review markers' },
+          ].map((item, idx) => (
+            <div
+              key={idx}
+              style={{
+                background: 'var(--surface-1)',
+                border: '1px solid var(--border)',
+                borderRadius: '10px',
+                padding: '20px',
+              }}
+            >
+              <div style={{ fontSize: '28px', marginBottom: '8px' }}>
+                {['🔤', '👤', '⚖️', '⏱️', '🌐', '🤖'][idx]}
+              </div>
+              <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '8px' }}>
+                {item.signal}
+              </h3>
+              <p style={{ fontSize: '13px', color: 'var(--text-muted)', lineHeight: '1.6' }}>
+                {item.desc}
+              </p>
+            </div>
+          ))}
+        </div>
+
         {/* Two Column Layout */}
         <div
           style={{

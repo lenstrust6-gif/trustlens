@@ -2,6 +2,7 @@ import { use } from 'react'
 import HeroSection from '@/components/home/HeroSection'
 import HowItWorks from '@/components/home/HowItWorks'
 import VerdictPreview from '@/components/home/VerdictPreview'
+import TestimonialsSection from '@/components/home/TestimonialsSection'
 import CategoryBrowse from '@/components/home/CategoryBrowse'
 import AuthenticitySection from '@/components/home/AuthenticitySection'
 import CompetitorContext from '@/components/home/CompetitorContext'
@@ -30,6 +31,9 @@ export default function HomePage({
 
       {/* Verdict Preview */}
       <VerdictPreview locale={locale} />
+
+      {/* Testimonials */}
+      <TestimonialsSection locale={locale} />
 
       {/* Category Browse */}
       <CategoryBrowse locale={locale} />

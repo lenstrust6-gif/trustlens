@@ -17,17 +17,17 @@ interface Product {
   category: string
 }
 
-const CATEGORY_LABELS: Record<string, string> = {
-  'tws-earbuds': '🎧 TWS Earbuds',
-  'smartwatches': '⌚ Smartwatches',
-  'wireless-headphones': '🎧 Wireless Headphones',
-  'bluetooth-speakers': '🔊 Bluetooth Speakers',
-  'power-banks': '🔋 Power Banks',
-  'smartphones': '📱 Smartphones',
-  'laptops': '💻 Laptops',
-  'cameras': '📷 Cameras',
-  'smartbands': '⌚ Smart Bands',
-  'tablets': '📱 Tablets',
+const CATEGORY_LABELS: Record<string, { emoji: string; name: string; desc: string }> = {
+  'tws-earbuds': { emoji: '🎧', name: 'TWS Earbuds', desc: 'Wireless earbuds with noise cancellation' },
+  'smartwatches': { emoji: '⌚', name: 'Smartwatches', desc: 'Fitness tracking and notifications' },
+  'wireless-headphones': { emoji: '🎧', name: 'Wireless Headphones', desc: 'Over-ear and on-ear headphones' },
+  'bluetooth-speakers': { emoji: '🔊', name: 'Bluetooth Speakers', desc: 'Portable wireless speakers' },
+  'power-banks': { emoji: '🔋', name: 'Power Banks', desc: 'Fast charging battery backup' },
+  'smartphones': { emoji: '📱', name: 'Smartphones', desc: 'Latest phones and flagships' },
+  'laptops': { emoji: '💻', name: 'Laptops', desc: 'Work and gaming laptops' },
+  'cameras': { emoji: '📷', name: 'Cameras', desc: 'DSLR and mirrorless cameras' },
+  'smartbands': { emoji: '⌚', name: 'Smart Bands', desc: 'Activity and health trackers' },
+  'tablets': { emoji: '📱', name: 'Tablets', desc: 'iPad and Android tablets' },
 }
 
 export default function CategoriesPage({
@@ -131,14 +131,17 @@ export default function CategoriesPage({
                 {/* Category Header */}
                 <div style={{ marginBottom: '20px' }}>
                   <div style={{ fontSize: '40px', marginBottom: '12px', lineHeight: 1 }}>
-                    {CATEGORY_LABELS[category.slug]?.charAt(0) || '📦'}
+                    {CATEGORY_LABELS[category.slug]?.emoji || '📦'}
                   </div>
-                  <h2 style={{ fontSize: '22px', fontWeight: '600', marginBottom: '8px', color: 'var(--text-primary)' }}>
-                    {CATEGORY_LABELS[category.slug]?.slice(2) || category.name}
+                  <h2 style={{ fontSize: '22px', fontWeight: '600', marginBottom: '4px', color: 'var(--text-primary)' }}>
+                    {CATEGORY_LABELS[category.slug]?.name || category.name}
                   </h2>
+                  <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '12px' }}>
+                    {CATEGORY_LABELS[category.slug]?.desc || ''}
+                  </p>
                   <div
                     style={{
-                      fontSize: '14px',
+                      fontSize: '13px',
                       color: 'var(--accent)',
                       fontWeight: '600',
                     }}

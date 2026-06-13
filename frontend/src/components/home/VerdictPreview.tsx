@@ -417,8 +417,32 @@ export default function VerdictPreview({ locale }: VerdictPreviewProps) {
           </div>
         </div>
 
-        {/* CTA Button */}
-        <div style={{ textAlign: 'center', marginTop: '32px' }}>
+        {/* CTA Buttons */}
+        <div style={{ textAlign: 'center', marginTop: '32px', display: 'flex', gap: '12px', justifyContent: 'center' }}>
+          <button
+            style={{
+              background: 'var(--accent)',
+              color: 'white',
+              border: 'none',
+              padding: '12px 28px',
+              borderRadius: '6px',
+              fontSize: '14px',
+              cursor: 'pointer',
+              transition: 'all var(--transition-base)',
+              fontFamily: 'var(--font-body)',
+              fontWeight: 600,
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-2px)'
+              e.currentTarget.style.boxShadow = '0 8px 16px rgba(37, 99, 235, 0.3)'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)'
+              e.currentTarget.style.boxShadow = 'none'
+            }}
+          >
+            Search Products →
+          </button>
           <button
             style={{
               background: 'transparent',
@@ -437,11 +461,11 @@ export default function VerdictPreview({ locale }: VerdictPreviewProps) {
               e.currentTarget.style.color = 'var(--accent)'
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = 'var(--border-hover)'
+              e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.20)'
               e.currentTarget.style.color = 'var(--text-primary)'
             }}
           >
-            Search for your product →
+            Browse Categories
           </button>
         </div>
       </div>
