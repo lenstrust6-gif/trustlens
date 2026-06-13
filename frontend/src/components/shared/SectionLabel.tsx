@@ -13,7 +13,7 @@ export default function SectionLabel({
       style={{
         fontSize: '11px',
         letterSpacing: '0.15em',
-        color: 'var(--text-muted)',
+        color: 'var(--accent)',
         textTransform: 'uppercase',
         fontWeight: 500,
         marginBottom: '16px',
