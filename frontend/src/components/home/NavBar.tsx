@@ -108,7 +108,6 @@ export default function NavBar({ locale }: NavBarProps) {
         {/* Center: Nav Links (Desktop Only) */}
         <div
           style={{
-            display: 'none',
             gap: '40px',
           }}
           className="hidden lg:flex"

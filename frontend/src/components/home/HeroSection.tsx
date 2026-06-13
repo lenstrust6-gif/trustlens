@@ -34,7 +34,7 @@ export default function HeroSection({ locale }: HeroSectionProps) {
         alignItems: 'center',
         justifyContent: 'center',
         position: 'relative',
-        padding: '50px 40px',
+        padding: '100px 40px 80px',
         background: 'var(--bg)',
         overflow: 'hidden',
       }}
@@ -138,6 +138,7 @@ export default function HeroSection({ locale }: HeroSectionProps) {
               marginTop: '48px',
               animation: `fadeUp 0.5s ease ${0.45}s both`,
               maxWidth: '600px',
+              width: '100%',
               margin: '48px auto 0',
             }}
           >
