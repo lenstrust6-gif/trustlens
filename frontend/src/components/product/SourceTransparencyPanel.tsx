@@ -30,8 +30,8 @@ export default function SourceTransparencyPanel({
         style={{
           width: '100%',
           padding: '12px',
-          background: 'rgba(255,255,255,0.04)',
-          border: '1px solid rgba(255,255,255,0.08)',
+          background: 'rgba(0,0,0,0.02)',
+          border: '1px solid rgba(0,0,0,0.08)',
           borderRadius: '6px',
           cursor: 'pointer',
           display: 'flex',
@@ -43,10 +43,10 @@ export default function SourceTransparencyPanel({
           transition: 'all 0.2s ease',
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.background = 'rgba(255,255,255,0.08)'
+          e.currentTarget.style.background = 'rgba(0,0,0,0.04)'
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.background = 'rgba(255,255,255,0.04)'
+          e.currentTarget.style.background = 'rgba(0,0,0,0.02)'
         }}
       >
         <span>📊 Source Transparency</span>
@@ -64,8 +64,8 @@ export default function SourceTransparencyPanel({
           style={{
             marginTop: '8px',
             padding: '16px',
-            background: 'rgba(255,255,255,0.04)',
-            border: '1px solid rgba(255,255,255,0.08)',
+            background: 'rgba(0,0,0,0.02)',
+            border: '1px solid rgba(0,0,0,0.08)',
             borderRadius: '6px',
             display: 'grid',
             gridTemplateColumns: 'repeat(2, 1fr)',
@@ -122,11 +122,11 @@ export default function SourceTransparencyPanel({
           </div>
 
           {/* Trust formula */}
-          <div style={{ gridColumn: '1 / -1', paddingTop: '8px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+          <div style={{ gridColumn: '1 / -1', paddingTop: '8px', borderTop: '1px solid rgba(0,0,0,0.08)' }}>
             <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '8px' }}>Trust Score Formula</div>
             <div style={{ fontSize: '12px', color: 'var(--text-secondary)', lineHeight: '1.6' }}>
               <div>Amazon <span style={{ color: 'var(--accent)' }}>45%</span> + YouTube <span style={{ color: 'var(--accent)' }}>35%</span> + Auth Score <span style={{ color: 'var(--accent)' }}>20%</span></div>
-              <div style={{ marginTop: '8px', fontSize: '10px', color: 'rgba(255,255,255,0.6)' }}>
+              <div style={{ marginTop: '8px', fontSize: '10px', color: 'var(--text-muted)' }}>
                 {lastRefreshed && `Last refreshed: ${new Date(lastRefreshed).toLocaleDateString()}`}
               </div>
             </div>

@@ -43,7 +43,7 @@ export default function ProfilePage() {
       <div style={{ maxWidth: '600px', margin: '0 auto', padding: '0 40px' }}>
         <h1 style={{ fontSize: '32px', fontWeight: 600, marginBottom: '40px' }}>My Profile</h1>
 
-        <div style={{ padding: '32px', background: 'rgba(255,255,255,0.04)', border: '1px solid var(--border)', borderRadius: '12px', marginBottom: '32px' }}>
+        <div style={{ padding: '32px', background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: '12px', marginBottom: '32px' }}>
           <div style={{ textAlign: 'center', marginBottom: '24px' }}>
             {session.user.image ? (
               <img src={session.user.image} alt={session.user.name || 'Profile'} style={{ width: '96px', height: '96px', borderRadius: '50%', objectFit: 'cover', marginBottom: '16px', border: '3px solid var(--accent)' }} />

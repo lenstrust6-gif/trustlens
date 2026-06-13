@@ -370,7 +370,7 @@ export default function VerdictPreview({ locale }: VerdictPreviewProps) {
                 <div
                   style={{
                     height: '5px',
-                    background: 'rgba(255, 255, 255, 0.07)',
+                    background: 'rgba(0, 0, 0, 0.10)',
                     borderRadius: '3px',
                     overflow: 'hidden',
                   }}
@@ -401,7 +401,7 @@ export default function VerdictPreview({ locale }: VerdictPreviewProps) {
           <div
             style={{
               padding: '16px 28px',
-              background: 'rgba(255, 255, 255, 0.015)',
+              background: 'rgba(0, 0, 0, 0.02)',
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
@@ -422,7 +422,7 @@ export default function VerdictPreview({ locale }: VerdictPreviewProps) {
           <button
             style={{
               background: 'transparent',
-              border: '1px solid rgba(255, 255, 255, 0.20)',
+              border: '1px solid rgba(0, 0, 0, 0.20)',
               color: 'var(--text-primary)',
               padding: '12px 28px',
               borderRadius: '6px',

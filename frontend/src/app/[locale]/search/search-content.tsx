@@ -198,8 +198,8 @@ export default function SearchContent({ locale }: SearchContentProps) {
                 flex: 1,
                 padding: '16px 20px',
                 fontSize: '16px',
-                background: 'rgba(255,255,255,0.04)',
-                border: '1px solid rgba(255,255,255,0.12)',
+                background: 'rgba(0,0,0,0.02)',
+                border: '1px solid rgba(0,0,0,0.12)',
                 borderRadius: '8px',
                 color: 'var(--text-primary)',
                 fontFamily: 'var(--font-body)',
@@ -211,7 +211,7 @@ export default function SearchContent({ locale }: SearchContentProps) {
                 e.currentTarget.style.boxShadow = '0 0 0 3px var(--accent-glow)'
               }}
               onBlur={(e) => {
-                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)'
+                e.currentTarget.style.borderColor = 'rgba(0,0,0,0.12)'
                 e.currentTarget.style.boxShadow = 'none'
               }}
             />
@@ -221,8 +221,8 @@ export default function SearchContent({ locale }: SearchContentProps) {
               onClick={() => setFilterPanelOpen(!filterPanelOpen)}
               style={{
                 padding: '16px 20px',
-                background: 'rgba(255,255,255,0.04)',
-                border: '1px solid rgba(255,255,255,0.12)',
+                background: 'rgba(0,0,0,0.02)',
+                border: '1px solid rgba(0,0,0,0.12)',
                 borderRadius: '8px',
                 color: 'var(--text-primary)',
                 cursor: 'pointer',
@@ -235,10 +235,10 @@ export default function SearchContent({ locale }: SearchContentProps) {
               }}
               className="md:hidden"
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgba(255,255,255,0.08)'
+                e.currentTarget.style.background = 'rgba(0,0,0,0.04)'
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'rgba(255,255,255,0.04)'
+                e.currentTarget.style.background = 'rgba(0,0,0,0.02)'
               }}
             >
               <Filter size={20} />

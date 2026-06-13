@@ -99,7 +99,7 @@ export function UserMenuContent({ locale }: UserMenuProps) {
           transition: 'background var(--transition-base)',
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.background = 'rgba(255,255,255,0.08)'
+          e.currentTarget.style.background = 'rgba(0,0,0,0.04)'
         }}
         onMouseLeave={(e) => {
           e.currentTarget.style.background = 'none'
@@ -142,11 +142,11 @@ export function UserMenuContent({ locale }: UserMenuProps) {
             top: '100%',
             right: 0,
             marginTop: '8px',
-            background: 'rgba(7, 9, 12, 0.95)',
+            background: 'var(--surface-1)',
             border: '1px solid var(--border)',
             borderRadius: '8px',
             minWidth: '200px',
-            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.4)',
+            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.1)',
             zIndex: 1000,
           }}
         >

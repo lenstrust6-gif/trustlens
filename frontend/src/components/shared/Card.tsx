@@ -21,7 +21,7 @@ export default function Card({
 }: CardProps) {
   const baseStyle = {
     background: 'var(--surface-1)',
-    border: borderBrighter ? '1px solid rgba(255,255,255,0.10)' : '1px solid var(--border)',
+    border: borderBrighter ? '1px solid rgba(0,0,0,0.15)' : '1px solid var(--border)',
     borderRadius: '10px',
     padding: 'var(--space-lg)',
     transition: 'all var(--transition-slow)',

@@ -108,8 +108,8 @@ export default function CategoriesPage({
               <div
                 style={{
                   padding: '32px 24px',
-                  background: 'rgba(255, 255, 255, 0.04)',
-                  border: '1px solid rgba(255, 255, 255, 0.12)',
+                  background: 'var(--surface-1)',
+                  border: '1px solid var(--border)',
                   borderRadius: '12px',
                   transition: 'all 0.3s ease',
                   cursor: 'pointer',
@@ -118,13 +118,13 @@ export default function CategoriesPage({
                   flexDirection: 'column',
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)'
+                  e.currentTarget.style.background = 'var(--surface-2)'
                   e.currentTarget.style.borderColor = 'rgba(37, 99, 235, 0.3)'
                   e.currentTarget.style.transform = 'translateY(-4px)'
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.04)'
-                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.12)'
+                  e.currentTarget.style.background = 'var(--surface-1)'
+                  e.currentTarget.style.borderColor = 'var(--border)'
                   e.currentTarget.style.transform = 'translateY(0)'
                 }}
               >
