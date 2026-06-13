@@ -1,5 +1,4 @@
 import { use } from 'react'
-import NavBar from '@/components/home/NavBar'
 import HeroSection from '@/components/home/HeroSection'
 import HowItWorks from '@/components/home/HowItWorks'
 import VerdictPreview from '@/components/home/VerdictPreview'
@@ -23,9 +22,6 @@ export default function HomePage({
 
   return (
     <div style={{ background: 'var(--bg)', color: 'var(--text-primary)' }}>
-      {/* Navigation */}
-      <NavBar locale={locale} />
-
       {/* Hero Section */}
       <HeroSection locale={locale} />
 
