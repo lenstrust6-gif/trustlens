@@ -123,7 +123,7 @@ export default function HowItWorks({ locale }: HowItWorksProps) {
                   transition: `all 0.5s ease ${idx * 150}ms`,
                 }}
               >
-                <Card>
+                <Card borderBrighter>
                   {/* Step Number */}
                   <div
                     style={{

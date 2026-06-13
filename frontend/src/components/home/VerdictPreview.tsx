@@ -419,7 +419,7 @@ export default function VerdictPreview({ locale }: VerdictPreviewProps) {
           <button
             style={{
               background: 'transparent',
-              border: '1px solid var(--border-hover)',
+              border: '1px solid rgba(255, 255, 255, 0.20)',
               color: 'var(--text-primary)',
               padding: '12px 28px',
               borderRadius: '6px',

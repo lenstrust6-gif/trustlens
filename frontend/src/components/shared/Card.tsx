@@ -7,6 +7,7 @@ interface CardProps {
   href?: string
   featured?: boolean
   style?: React.CSSProperties
+  borderBrighter?: boolean
 }
 
 export default function Card({
@@ -16,10 +17,11 @@ export default function Card({
   href,
   featured = false,
   style,
+  borderBrighter = false,
 }: CardProps) {
   const baseStyle = {
     background: 'var(--surface-1)',
-    border: '1px solid var(--border)',
+    border: borderBrighter ? '1px solid rgba(255,255,255,0.10)' : '1px solid var(--border)',
     borderRadius: '10px',
     padding: 'var(--space-lg)',
     transition: 'all var(--transition-slow)',

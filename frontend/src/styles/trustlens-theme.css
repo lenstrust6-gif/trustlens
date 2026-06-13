@@ -384,7 +384,7 @@ input[type='search'],
 textarea {
   font-family: var(--font-body);
   background: rgba(255, 255, 255, 0.04);
-  border: 1px solid var(--border);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 8px;
   padding: 0 var(--space-md);
   height: 52px;
