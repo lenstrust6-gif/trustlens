@@ -23,12 +23,17 @@ export default function ComingSoonPage({
   const [email, setEmail] = useState('')
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!email || !email.includes('@')) return
+    if (!email || !email.includes('@')) {
+      setError('Please enter a valid email')
+      return
+    }
 
     setLoading(true)
+    setError('')
     try {
       if (onEmailCapture) {
         await onEmailCapture(email)
@@ -38,6 +43,7 @@ export default function ComingSoonPage({
       setTimeout(() => setSubmitted(false), 5000)
     } catch (error) {
       console.error('Error capturing email:', error)
+      setError('Failed to save email. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -324,6 +330,21 @@ export default function ComingSoonPage({
               }}
             >
               ✓ We'll email you when the verdict is ready!
+            </div>
+          )}
+
+          {error && (
+            <div
+              style={{
+                marginTop: '12px',
+                fontSize: '13px',
+                color: 'var(--red)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+              }}
+            >
+              ⚠️ {error}
             </div>
           )}
         </div>
