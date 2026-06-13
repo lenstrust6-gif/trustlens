@@ -147,20 +147,21 @@ export default function VerdictPreview({ locale }: VerdictPreviewProps) {
             {/* TrustScore Block */}
             <div
               style={{
-                background: '#F0F4F8',
+                background: '#EEEEEE',
                 borderRadius: '10px',
                 padding: '18px 22px',
                 textAlign: 'center',
-                border: '1px solid rgba(0, 0, 0, 0.08)',
+                border: '1px solid rgba(0, 0, 0, 0.12)',
               }}
             >
               <div
                 style={{
-                  fontSize: '9px',
-                  color: 'var(--text-muted)',
+                  fontSize: '11px',
+                  color: '#555555',
                   letterSpacing: '0.1em',
                   textTransform: 'uppercase',
                   marginBottom: '8px',
+                  fontWeight: 500,
                 }}
               >
                 TrustScore
@@ -179,7 +180,7 @@ export default function VerdictPreview({ locale }: VerdictPreviewProps) {
               <div
                 style={{
                   fontSize: '20px',
-                  color: 'var(--text-muted)',
+                  color: '#333333',
                   fontFamily: 'var(--font-mono)',
                 }}
               >
@@ -188,7 +189,7 @@ export default function VerdictPreview({ locale }: VerdictPreviewProps) {
               <div
                 style={{
                   height: '4px',
-                  background: 'rgba(255, 255, 255, 0.08)',
+                  background: 'rgba(0, 0, 0, 0.10)',
                   borderRadius: '2px',
                   margin: '12px 0',
                   overflow: 'hidden',

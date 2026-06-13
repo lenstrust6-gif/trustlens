@@ -17,8 +17,8 @@
 
   /* Text */
   --text-primary: #1A1A1A;
-  --text-secondary: #555555;
-  --text-muted: #888888;
+  --text-secondary: #333333;
+  --text-muted: #555555;
 
   /* Accent */
   --accent: #2563EB;
@@ -397,7 +397,7 @@ input[type='text']::placeholder,
 input[type='email']::placeholder,
 input[type='search']::placeholder,
 textarea::placeholder {
-  color: var(--text-muted);
+  color: #999999;
 }
 
 input[type='text']:focus,
