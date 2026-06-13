@@ -68,6 +68,7 @@ async def get_all_with_products(session: AsyncSession) -> list[dict]:
     verdicts = []
     for verdict_orm, product_orm in rows:
         verdict_dict = {
+            "product_id": str(verdict_orm.product_id),
             "product_name": product_orm.name,
             "product_slug": product_orm.slug,
             "category": product_orm.category,

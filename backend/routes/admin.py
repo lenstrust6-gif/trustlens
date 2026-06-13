@@ -45,19 +45,20 @@ async def get_products(
     """Full product index with verdicts (paginated)."""
     try:
         products = await repos.products.get_all(session)
-        verdicts_map = {v.product_id: v for v in await repos.verdicts.get_all_with_products(session)}
+        verdicts_list = await repos.verdicts.get_all_with_products(session)
+        verdicts_map = {v["product_id"]: v for v in verdicts_list}
 
         result = []
         for product in products[offset : offset + limit]:
-            verdict = verdicts_map.get(product.id)
+            verdict = verdicts_map.get(str(product.id))
             result.append({
                 "id": str(product.id),
                 "name": product.name,
                 "slug": product.slug,
                 "category": product.category,
                 "locale": product.locale,
-                "trust_score": float(verdict.trust_score) if verdict else 0.0,
-                "confidence_tier": verdict.confidence_tier if verdict else "early",
+                "trust_score": verdict["trust_score"] if verdict else 0.0,
+                "confidence_tier": verdict["confidence_tier"] if verdict else "early",
                 "created_at": product.created_at.isoformat() if product.created_at else None,
             })
 
