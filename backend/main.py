@@ -38,13 +38,14 @@ async def lifespan(app: FastAPI):
 
     # Start background scheduler for verdict generation
     try:
-        # Run every 5 minutes (300 seconds) - respects API rate limits
-        # YouTube: ~400 products/day safe limit
+        # Run every 2 hours (7200 seconds) - respects YouTube free tier quota
+        # YouTube free tier: 10,000 units/day (100 search queries/day)
+        # At 1 search per product: ~100 products max per day
         # Groq: 30 req/min, plenty of headroom
         # Anthropic: 50k tokens/min, plenty of headroom
-        scheduler.add_job(refresh_job, 'interval', seconds=300, id='refresh-stale-verdicts')
+        scheduler.add_job(refresh_job, 'interval', seconds=7200, id='refresh-stale-verdicts')
         scheduler.start()
-        logger.info("Verdict refresh scheduler started (every 5 minutes) - ETA 2 days for all 648 products")
+        logger.info("Verdict refresh scheduler started (every 2 hours) - ETA ~6 days for 661 products with free YouTube tier")
     except Exception as e:
         logger.error(f"Failed to start scheduler: {e}", exc_info=True)
 
