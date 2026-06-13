@@ -7,31 +7,31 @@
 
 :root {
   /* Backgrounds */
-  --bg: #07090C;
-  --surface-1: #0F1318;
-  --surface-2: #161C23;
+  --bg: #FFFFFF;
+  --surface-1: #F8F9FA;
+  --surface-2: #EEEEEE;
 
   /* Borders */
-  --border: rgba(255, 255, 255, 0.07);
-  --border-hover: rgba(255, 255, 255, 0.13);
+  --border: rgba(0, 0, 0, 0.10);
+  --border-hover: rgba(0, 0, 0, 0.15);
 
   /* Text */
-  --text-primary: #F0F4F8;
-  --text-secondary: #8B9DB5;
-  --text-muted: #4A5568;
+  --text-primary: #1A1A1A;
+  --text-secondary: #555555;
+  --text-muted: #888888;
 
   /* Accent */
   --accent: #2563EB;
-  --accent-glow: rgba(37, 99, 235, 0.12);
+  --accent-glow: rgba(37, 99, 235, 0.08);
   --accent-bright: #1D4ED8;
 
   /* Semantic colors */
-  --green: #10B981;
-  --green-glow: rgba(16, 185, 129, 0.12);
-  --amber: #F59E0B;
-  --amber-glow: rgba(245, 158, 11, 0.12);
-  --red: #EF4444;
-  --red-glow: rgba(239, 68, 68, 0.12);
+  --green: #059669;
+  --green-glow: rgba(5, 150, 105, 0.08);
+  --amber: #D97706;
+  --amber-glow: rgba(217, 119, 6, 0.08);
+  --red: #DC2626;
+  --red-glow: rgba(220, 38, 38, 0.08);
 
   /* Spacing */
   --space-xs: 4px;
@@ -287,8 +287,8 @@ small {
 }
 
 .card--featured {
-  border-color: rgba(37, 99, 235, 0.2);
-  background: rgba(37, 99, 235, 0.05);
+  border-color: rgba(37, 99, 235, 0.3);
+  background: rgba(37, 99, 235, 0.08);
 }
 
 /* Badge base styles */
@@ -302,7 +302,7 @@ small {
 }
 
 .badge--default {
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(0, 0, 0, 0.04);
   border-color: var(--border);
   color: var(--text-secondary);
 }
@@ -367,7 +367,7 @@ button {
 }
 
 .btn--ghost {
-  background: transparent;
+  background: rgba(0, 0, 0, 0.02);
   border-color: var(--border-hover);
   color: var(--text-primary);
 }
@@ -383,8 +383,8 @@ input[type='email'],
 input[type='search'],
 textarea {
   font-family: var(--font-body);
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.02);
+  border: 1px solid rgba(0, 0, 0, 0.12);
   border-radius: 8px;
   padding: 0 var(--space-md);
   height: 52px;

@@ -147,10 +147,11 @@ export default function VerdictPreview({ locale }: VerdictPreviewProps) {
             {/* TrustScore Block */}
             <div
               style={{
-                background: '#0A0D12',
+                background: '#F0F4F8',
                 borderRadius: '10px',
                 padding: '18px 22px',
                 textAlign: 'center',
+                border: '1px solid rgba(0, 0, 0, 0.08)',
               }}
             >
               <div

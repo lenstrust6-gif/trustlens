@@ -64,7 +64,7 @@ export default function SearchBar({
         display: 'flex',
         alignItems: 'center',
         height: '60px',
-        background: 'rgba(255,255,255,0.04)',
+        background: 'rgba(0, 0, 0, 0.04)',
         border: `1px solid var(--border${isFocused ? '-hover' : ''})`,
         borderRadius: '8px',
         paddingLeft: '16px',

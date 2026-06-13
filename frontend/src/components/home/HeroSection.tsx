@@ -53,7 +53,7 @@ export default function HeroSection({ locale }: HeroSectionProps) {
           position: absolute;
           inset: 0;
           background-image:
-            radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px);
+            radial-gradient(circle, rgba(0,0,0,0.04) 1px, transparent 1px);
           background-size: 32px 32px;
           pointer-events: none;
           z-index: 1;
@@ -173,7 +173,7 @@ export default function HeroSection({ locale }: HeroSectionProps) {
                 key={pill}
                 onClick={() => handlePillClick(pill)}
                 style={{
-                  background: 'rgba(255,255,255,0.04)',
+                  background: 'rgba(0, 0, 0, 0.04)',
                   border: '1px solid var(--border)',
                   padding: '5px 12px',
                   borderRadius: '4px',
@@ -184,13 +184,13 @@ export default function HeroSection({ locale }: HeroSectionProps) {
                   animation: `fadeUp 0.4s ease ${0.6 + idx * 0.05}s both`,
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = 'rgba(37, 99, 235, 0.3)'
-                  e.currentTarget.style.background = 'rgba(37, 99, 235, 0.06)'
+                  e.currentTarget.style.borderColor = 'rgba(37, 99, 235, 0.5)'
+                  e.currentTarget.style.background = 'rgba(37, 99, 235, 0.10)'
                   e.currentTarget.style.color = 'var(--text-primary)'
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.borderColor = 'var(--border)'
-                  e.currentTarget.style.background = 'rgba(255,255,255,0.04)'
+                  e.currentTarget.style.background = 'rgba(0, 0, 0, 0.04)'
                   e.currentTarget.style.color = 'var(--text-secondary)'
                 }}
               >
@@ -207,7 +207,7 @@ export default function HeroSection({ locale }: HeroSectionProps) {
               marginTop: '40px',
               borderTop: '1px solid var(--border)',
               borderBottom: '1px solid var(--border)',
-              background: 'rgba(255,255,255,0.02)',
+              background: 'rgba(0, 0, 0, 0.02)',
               padding: '20px 0',
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
@@ -226,7 +226,7 @@ export default function HeroSection({ locale }: HeroSectionProps) {
                 style={{
                   textAlign: 'center',
                   paddingRight: idx < 3 ? '20px' : 0,
-                  borderRight: idx < 3 ? '1px solid rgba(255,255,255,0.12)' : 'none',
+                  borderRight: idx < 3 ? '1px solid rgba(0, 0, 0, 0.12)' : 'none',
                 }}
               >
                 <div
