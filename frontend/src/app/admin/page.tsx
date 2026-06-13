@@ -84,15 +84,15 @@ export default function AdminPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
             <div className="bg-white p-6 rounded-lg shadow">
               <p className="text-gray-600 text-sm font-semibold">Total Products</p>
-              <p className="text-3xl font-bold mt-2">{stats.total_products}</p>
+              <p className="text-3xl font-bold mt-2" style={{ color: '#60A5FA' }}>{stats.total_products}</p>
             </div>
             <div className="bg-white p-6 rounded-lg shadow">
               <p className="text-gray-600 text-sm font-semibold">Verdicts Ready</p>
-              <p className="text-3xl font-bold mt-2">{stats.total_verdicts}</p>
+              <p className="text-3xl font-bold mt-2" style={{ color: '#60A5FA' }}>{stats.total_verdicts}</p>
             </div>
             <div className="bg-white p-6 rounded-lg shadow">
               <p className="text-gray-600 text-sm font-semibold">Pending Searches</p>
-              <p className="text-3xl font-bold mt-2">{stats.pending_misses}</p>
+              <p className="text-3xl font-bold mt-2" style={{ color: '#60A5FA' }}>{stats.pending_misses}</p>
             </div>
             <div className="bg-white p-6 rounded-lg shadow">
               <p className="text-gray-600 text-sm font-semibold">Cache Hit Rate</p>
@@ -100,7 +100,7 @@ export default function AdminPage() {
             </div>
             <div className="bg-white p-6 rounded-lg shadow">
               <p className="text-gray-600 text-sm font-semibold">Emails Captured</p>
-              <p className="text-3xl font-bold mt-2">{stats.emails_captured}</p>
+              <p className="text-3xl font-bold mt-2" style={{ color: '#60A5FA' }}>{stats.emails_captured}</p>
             </div>
           </div>
         )}

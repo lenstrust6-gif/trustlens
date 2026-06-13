@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'
 import SearchBar from '../shared/SearchBar'
 import CountUpNumber from '../shared/CountUpNumber'
 import GlowGradient from '../shared/GlowGradient'
-import Badge from '../shared/Badge'
 import { QUICK_PILLS } from '@/lib/home-data'
 
 interface HeroSectionProps {
@@ -69,31 +68,6 @@ export default function HeroSection({ locale }: HeroSectionProps) {
           zIndex: 2,
         }}
       >
-        {/* Pre-headline Badge */}
-        {mounted && (
-          <div
-            style={{
-              animation: `fadeUp 0.4s ease ${0.1}s both`,
-            }}
-          >
-            <Badge variant="red">
-              <span style={{ display: 'inline-block', marginRight: '6px' }}>
-                <span
-                  style={{
-                    display: 'inline-block',
-                    width: '6px',
-                    height: '6px',
-                    background: 'var(--red)',
-                    borderRadius: '50%',
-                    animation: 'pulse 2s infinite',
-                  }}
-                />
-              </span>
-              Fakespot shut down · No replacement exists
-            </Badge>
-          </div>
-        )}
-
         {/* Main Headline */}
         {mounted && (
           <h1

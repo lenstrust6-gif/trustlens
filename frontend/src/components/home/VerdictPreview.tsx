@@ -62,6 +62,7 @@ export default function VerdictPreview({ locale }: VerdictPreviewProps) {
             margin: '0 auto',
             background: 'var(--surface-1)',
             border: '1px solid var(--border)',
+            borderTop: '3px solid #2563EB',
             borderRadius: '14px',
             overflow: 'hidden',
             opacity: isVisible ? 1 : 0,
