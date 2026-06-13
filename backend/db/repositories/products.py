@@ -17,6 +17,15 @@ async def get_by_slug(session: AsyncSession, slug: str, locale: str) -> Product 
     return None
 
 
+async def get_by_asin(session: AsyncSession, asin: str, locale: str) -> ProductModel | None:
+    """Get product by ASIN and locale (returns ORM object, not Pydantic model)."""
+    stmt = select(ProductModel).where(
+        ProductModel.asin == asin, ProductModel.locale == locale
+    )
+    result = await session.execute(stmt)
+    return result.scalars().first()
+
+
 async def create(
     session: AsyncSession,
     name: str,
