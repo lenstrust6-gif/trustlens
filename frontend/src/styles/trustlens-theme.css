@@ -38,9 +38,9 @@
   --space-sm: 8px;
   --space-md: 16px;
   --space-lg: 24px;
-  --space-xl: 40px;
-  --space-2xl: 60px;
-  --space-3xl: 100px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 72px;
 
   /* Typography */
   --font-display: 'Instrument Serif', serif;
@@ -95,44 +95,44 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 h1 {
-  font-size: 64px;
-  line-height: 1.08;
+  font-size: 72px;
+  line-height: 1.1;
 
   @media (max-width: 768px) {
-    font-size: 42px;
+    font-size: 48px;
   }
 
   @media (max-width: 640px) {
-    font-size: 36px;
+    font-size: 40px;
   }
 }
 
 h2 {
-  font-size: 40px;
+  font-size: 48px;
   line-height: 1.2;
   color: var(--text-primary);
 
   @media (max-width: 768px) {
-    font-size: 30px;
+    font-size: 36px;
   }
 
   @media (max-width: 640px) {
-    font-size: 28px;
+    font-size: 30px;
   }
 }
 
 h3 {
-  font-size: 22px;
+  font-size: 26px;
   line-height: 1.3;
 }
 
 p {
-  font-size: 16px;
-  line-height: 1.65;
+  font-size: 18px;
+  line-height: 1.7;
   color: var(--text-secondary);
 
   @media (max-width: 640px) {
-    font-size: 15px;
+    font-size: 16px;
   }
 }
 
@@ -411,7 +411,7 @@ textarea:focus {
 
 /* Section spacing */
 section {
-  padding: var(--space-3xl) 0;
+  padding: 48px 0;
 }
 
 /* Link styles */

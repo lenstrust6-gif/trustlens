@@ -42,7 +42,7 @@ export default function VerdictPreview({ locale }: VerdictPreviewProps) {
     <section
       id="verdict-preview"
       style={{
-        padding: '40px 40px 60px',
+        padding: '36px 40px 48px',
         background: 'var(--bg)',
       }}
       className="px-5 sm:px-8"

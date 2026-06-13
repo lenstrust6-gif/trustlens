@@ -106,7 +106,7 @@ export default function CategoryBrowse({ locale }: CategoryBrowseProps) {
     <section
       id="categories"
       style={{
-        padding: '40px 40px 60px',
+        padding: '36px 40px 48px',
         background: 'var(--bg)',
         borderTop: '1px solid var(--border)',
       }}

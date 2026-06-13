@@ -11,7 +11,7 @@ export default function CompetitorContext({ locale }: CompetitorContextProps) {
   return (
     <section
       style={{
-        padding: '40px 40px 60px',
+        padding: '36px 40px 48px',
         background: 'var(--bg)',
         borderTop: '1px solid var(--border)',
       }}

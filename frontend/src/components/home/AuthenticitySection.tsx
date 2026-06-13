@@ -12,8 +12,8 @@ export default function AuthenticitySection({ locale }: AuthenticicitySectionPro
   return (
     <section
       style={{
-        padding: '40px 40px 60px',
-        background: 'rgba(255,255,255,0.02)',
+        padding: '36px 40px 48px',
+        background: 'rgba(0,0,0,0.02)',
         borderTop: '1px solid var(--border)',
         borderBottom: '1px solid var(--border)',
       }}

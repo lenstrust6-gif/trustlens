@@ -47,8 +47,8 @@ export default function SubmitProduct({ locale }: SubmitProductProps) {
   return (
     <section
       style={{
-        padding: '40px 40px 60px',
-        background: 'rgba(255,255,255,0.02)',
+        padding: '36px 40px 48px',
+        background: 'rgba(0,0,0,0.02)',
         borderTop: '1px solid var(--border)',
       }}
       className="px-5 sm:px-8"
@@ -118,8 +118,8 @@ export default function SubmitProduct({ locale }: SubmitProductProps) {
                 width: '100%',
                 height: '52px',
                 padding: '0 16px',
-                background: 'rgba(255,255,255,0.04)',
-                border: '1px solid rgba(255,255,255,0.12)',
+                background: 'rgba(0,0,0,0.04)',
+                border: '1px solid rgba(0,0,0,0.12)',
                 borderRadius: '8px',
                 fontSize: '15px',
                 color: 'var(--text-primary)',
@@ -131,7 +131,7 @@ export default function SubmitProduct({ locale }: SubmitProductProps) {
                 e.currentTarget.style.boxShadow = '0 0 0 3px var(--accent-glow)'
               }}
               onBlur={(e) => {
-                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)'
+                e.currentTarget.style.borderColor = 'rgba(0,0,0,0.12)'
                 e.currentTarget.style.boxShadow = 'none'
               }}
             />
@@ -146,8 +146,8 @@ export default function SubmitProduct({ locale }: SubmitProductProps) {
                 width: '100%',
                 height: '52px',
                 padding: '0 16px',
-                background: 'rgba(255,255,255,0.04)',
-                border: '1px solid rgba(255,255,255,0.12)',
+                background: 'rgba(0,0,0,0.04)',
+                border: '1px solid rgba(0,0,0,0.12)',
                 borderRadius: '8px',
                 fontSize: '15px',
                 color: 'var(--text-primary)',
@@ -159,7 +159,7 @@ export default function SubmitProduct({ locale }: SubmitProductProps) {
                 e.currentTarget.style.boxShadow = '0 0 0 3px var(--accent-glow)'
               }}
               onBlur={(e) => {
-                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)'
+                e.currentTarget.style.borderColor = 'rgba(0,0,0,0.12)'
                 e.currentTarget.style.boxShadow = 'none'
               }}
             />
