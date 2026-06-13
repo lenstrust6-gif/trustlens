@@ -67,6 +67,29 @@ class SearchMissModel(Base):
     last_searched = Column(DateTime, server_default=func.now())
 
 
+class StagingQueueModel(Base):
+    __tablename__ = "staging_queue"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    asin = Column(String(20))
+    name = Column(String(255), nullable=False)
+    category = Column(String(100))
+    brand = Column(String(100))
+    locale = Column(String(5), default="in")
+    source = Column(String(50), nullable=False)  # 'amazon_new_releases', 'user_submit', 'scheduled_launch', 'manual'
+    review_count_amazon = Column(Integer, default=0)
+    review_count_youtube = Column(Integer, default=0)
+    status = Column(String(30), default="pending_editorial")  # pending_editorial, approved, monitoring, generating, live, insufficient_data
+    priority = Column(String(20), default="normal")  # low, normal, high
+    demand_count = Column(Integer, default=0)  # How many times users searched for this
+    approved_by = Column(String(255))
+    approved_at = Column(DateTime)
+    go_live_at = Column(DateTime)
+    notes = Column(Text)
+    detected_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+
+
 class EmailCaptureModel(Base):
     __tablename__ = "email_captures"
 
