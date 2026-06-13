@@ -118,7 +118,7 @@ export default function CategoryPage({
       style={{
         maxWidth: '1100px',
         margin: '0 auto',
-        padding: '72px 32px',
+        padding: '60px 32px',
         background: 'var(--bg)',
       }}
       className="px-5 sm:px-8"
@@ -139,21 +139,21 @@ export default function CategoryPage({
         style={{
           fontSize: '18px',
           color: 'var(--text-secondary)',
-          marginBottom: '48px',
+          marginBottom: '40px',
         }}
       >
         Find the best {categoryLabel} with authentic reviews
       </p>
 
       {/* Tier 1: Quick Picks */}
-      <section style={{ marginBottom: '64px' }}>
+      <section style={{ marginBottom: '48px' }}>
         <SectionLabel text="TOP PICKS" />
         <h2
           style={{
             fontSize: '36px',
             fontWeight: 400,
             color: 'var(--text-primary)',
-            marginBottom: '32px',
+            marginBottom: '24px',
             fontFamily: 'var(--font-display)',
           }}
         >
@@ -297,7 +297,7 @@ export default function CategoryPage({
       </section>
 
       {/* Tier 2: All Products */}
-      <section style={{ marginBottom: '64px' }}>
+      <section style={{ marginBottom: '48px' }}>
         <h2
           style={{
             fontSize: '28px',
